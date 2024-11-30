@@ -164,7 +164,7 @@ app.get('/marketing', (req, res) => {
     res.render('marketing.ejs')
 })
 
-const port = 3000;
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log(`Serving on port ${port}`)
 })

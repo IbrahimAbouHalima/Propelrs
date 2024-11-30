@@ -1,0 +1,82 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+      <% if (currentUser) { %>
+      <a href="/profile">
+        <div class="navbar-item">
+          <!-- Profile Picture -->
+          <figure class="image is-32x32" style="margin-right: 10px;">
+            <img class="is-rounded" src="public\images\profiles\20190902_002421.jpg" alt="Profile Picture">
+          </figure>
+
+          <!-- Username -->
+          <span class="navbar-item">
+            <strong><%= currentUser.username %></strong>
+          </span>
+        </div>
+      </a>
+      <% } %>
+      <a class="navbar-item" href="/feed">
+        Feed
+      </a>
+
+      <a class="navbar-item" href="/shop">
+        Shop
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More
+        </a>
+
+        <div class="navbar-dropdown">
+
+          <a class="navbar-item" href="/startBusiness">
+            Start a business
+          </a>
+          <a class="navbar-item" href="/jobs">
+            Jobs
+          </a>
+          <a class="navbar-item" href="/marketing">
+            Marketing Assistance
+          </a>
+          <hr class="navbar-divider">
+          <a class="navbar-item" href="/about">
+            About
+          </a>
+          <hr class="navbar-divider">
+          <a class="navbar-item">
+            Report an issue
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-end mx-2">
+      <div class="navbar-item">
+        <div class="buttons">
+          <% if (!currentUser) { %>
+          <a class="button is-primary" href="/signup">
+            <strong>Sign up</strong>
+          </a>
+          <a class="button is-light" href="/login">
+            Log in
+          </a>
+          <% } else { %>
+          <a class="button is-light" href="/logout">
+            Log out
+          </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

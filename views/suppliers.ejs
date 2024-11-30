@@ -1,0 +1,18 @@
+<% layout('layouts/boilerplate')%>
+<div class="container">
+  <% if(currentUser) {%>
+
+  <progress class="progress" value="100" max="100">100%</progress>
+  <p> find a supplier, you can use any of these or find your own</p>
+  <ul>
+    <li><a href="https://www.alibaba.com/">Ali Baba</a></li>
+    <li><a href="https://www.faire.com/">faire</a></li>
+    <li><a href="https://www.dhgate.com/">DH gate</a></li>
+    <li><a href="https://ekwholesale.co.uk/">ek wholesale</a></li>
+    <li><a href="https://indiamart.com/">india mart</a></li>
+    <li><a href="https://www.liquidation.com/index">Liquidation</a></li>
+  </ul>
+  <% } else { %>
+  <strong> You must be logged in</strong>
+  <% } %>
+</div>

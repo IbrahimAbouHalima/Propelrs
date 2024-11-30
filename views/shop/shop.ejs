@@ -1,0 +1,221 @@
+<% layout('layouts/boilerplate')%>
+<style>
+  .hero.is-medium {
+    background-image: url('images/shopPropelr.avif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>
+
+<section class="hero is-medium is-primary">
+  <div class="hero-body">
+    <p class="title">Shop</p>
+    <p class="subtitle">Find any service from local stores</p>
+    <% if(currentUser){ %><a href="/shop/newItem"><button class="button"> add item</button></a> <% } %>
+  </div>
+</section>
+
+
+<div class="columns mx-3 my-3">
+  <div class="column is-2">
+    <aside class="menu">
+      <p class="menu-label">Department</p>
+      <ul class="menu-list">
+        <li>
+          <a href="#" class="toggle-button"> Electronics </a>
+          <ul class="subdepartment m-0">
+            <li><a href="/shop?category=phones">Phones</a></li>
+            <li><a href="/shop?category=computers">Computers</a></li>
+            <li><a href="/shop?category=accessories">Accessories</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Fashion </a>
+          <ul class="subdepartment m-0">
+            <li><a href="/shop?category=men">Men</a></li>
+            <li><a href="/shop?category=women">Women</a></li>
+            <li><a href="/shop?category=children">Children</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Groceries </a>
+          <ul class="subdepartment m-0">
+            <li><a href="/shop?category=fruits">Fruits</a></li>
+            <li><a href="/shop?category=vegetables">Vegetables</a></li>
+            <li><a href="/shop?category=dairy">Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Services </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Real Estate </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Automotive </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Hotels </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Travel </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+  </div>
+
+
+
+
+  <div class="column mx-4">
+    <div class="columns is-multiline"">
+      <% for(let shop of shops){ %>
+      <div class=" column is-2">
+      <a href="shop/<%=shop._id%>">
+        <div class="card">
+          <div class="card-image">
+            <figure class="image is-4by3">
+              <% if (shop.images.length > 0) { %>
+              <img src="<%=shop.images[0].url%>">
+              <% } else { %>
+              <img src="https://bulma.io/assets/images/placeholders/1280x960.png" />
+              <% } %>
+            </figure>
+          </div>
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img src="https://bulma.io/assets/images/placeholders/96x96.png" />
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4"><%= shop.itemName %> </p>
+                <p class="title is-4"> <%=shop.uploadedUser.name%></p>
+                <p class="subtitle is-6"><%=shop.uploadedUser.username%></p>
+                <p class="subtitle is-4"> KD <%=shop.price%></p>
+              </div>
+            </div>
+
+            <div class="content">
+              <%= shop.description %>
+              <a href="#"><%=shop.tags %></a>
+              <br />
+              <time datetime="<%= shop.createdAt.toISOString() %>"><%= shop.createdAt.toLocaleString() %></time>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <% } %>
+  </div>
+</div>
+</div>
+</div>
+
+<!--
+<nav class="pagination is-centered mx-6" role="navigation" aria-label="pagination">
+  <a href="#" class="pagination-previous">Previous</a>
+  <a href="#" class="pagination-next">Next page</a>
+  <ul class="pagination-list">
+    <li><a href="#" class="pagination-link" aria-label="Goto page 1">1</a></li>
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li><a href="#" class="pagination-link" aria-label="Goto page 45">45</a></li>
+    <li>
+      <a class="pagination-link is-current" aria-label="Page 46" aria-current="page">46</a>
+    </li>
+    <li><a href="#" class="pagination-link" aria-label="Goto page 47">47</a></li>
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li><a href="#" class="pagination-link" aria-label="Goto page 86">86</a></li>
+  </ul>
+</nav>
+-->
+
+<style>
+  .card-image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .toggle-button {
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .arrow {
+    margin-right: 10px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .subdepartment {
+    margin-left: 20px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+  }
+
+  .subdepartment.active {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .expanded .arrow {
+    transform: rotate(90deg);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleButtons = document.querySelectorAll('.toggle-button');
+
+    toggleButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const subdepartment = button.nextElementSibling; // Get the corresponding subdepartment
+        const arrow = button.querySelector('.arrow'); // Get the arrow
+
+        subdepartment.classList.toggle('active'); // Toggle the active class
+
+        if (subdepartment.classList.contains('active')) {
+          arrow.textContent = '▼'; // Change to expanded arrow
+        } else {
+          arrow.textContent = '▶'; // Change to collapsed arrow
+        }
+      });
+    });
+
+    document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
+  });
+</script>

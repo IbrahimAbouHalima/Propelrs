@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate')%>
+<div class="container">
+  <h1>lets get your business started</h1>
+  <p></p>
+  <% if (!currentUser) { %>
+  <progress class="progress" value="0" max="100">15%</progress>
+  <p>We will provide all the necessary tools to help you get your business started, lets start with the very first step</p>
+  <a class="button" href="/signup">Sign Up!!</a>
+  <a class="button" href="/login">login instead?</a>
+  <%} else { %>
+
+
+
+  <% if(currentUser.accountType === 'user') {%>
+  <progress class="progress" value="10" max="100">10%</progress>
+  <form action="/upgrade-account" method="POST" class="mt-4">
+    <% if (currentUser.accountType === 'user') { %>
+    <button class="button is-info" type="submit">Switch to Business Account</button>
+    <% } %>
+  </form>
+  <% } else if(currentUser.accountType === 'business'){ %>
+  <progress class="progress" value="50" max="100">50%</progress>
+
+  <p> you can start by naming your business</p>
+  <form action="/startBusiness" method="POST">
+    <label class="label mt-2" for="businessName">business name</label>
+    <input class="input" type="text" id="businessName" name="businessName">
+    <label class="label mt-2" for="businessLogo">business logo</label>
+    <p>You can use your own logo or <a href="https://www.logoai.com/logo-maker">generate an AI logo</a></p>
+    <input class="input" type="text" id="businessLogo" name="businessLogo">
+
+    <label class="label mt-2" for="businessIndustry"> business industry</label>
+    <div class="control">
+      <div class="select">
+        <select id="businessIndustry" name="businessIndustry">
+          <option>Fashion</option>
+          <option>Electronics</option>
+          <option>Health & Beauty</option>
+          <option>Home & Garden</option>
+          <option>Food & Beverage</option>
+          <option>Groceries</option>
+          <option>Services</option>
+          <option>Real Estate</option>
+          <option>Automotive</option>
+          <option>Hotels</option>
+          <option>Travel</option>
+        </select>
+      </div>
+    </div>
+    <label class="label mt-2" for="businessDescription"> business description</label>
+    <input class="textarea" type="text" id="businessDescription" name="businessDescription">
+    <button class="button my-2" type="submit">Submit</button>
+  </form>
+  <% } %>
+  <% } %>
+</div>

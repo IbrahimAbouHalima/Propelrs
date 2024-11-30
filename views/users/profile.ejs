@@ -1,0 +1,48 @@
+<% layout('layouts/boilerplate') %>
+
+<% if(currentUser){ %>
+<div class="container">
+  <h1>Your Profile</h1>
+
+  <!-- Display user's current profile picture -->
+  <div class="profile-section">
+    <h3>Profile Picture</h3>
+  </div>
+
+  <!-- Profile update form for uploading a new profile picture -->
+  <form action="/profile" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="profilePicture">Upload New Profile Picture</label>
+      <input type="file" name="profilePicture" id="profilePicture" accept="image/*" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Update Profile</button>
+  </form>
+
+  <!-- Display other user information like email -->
+  <div class="user-details">
+    <h3>Your Information</h3>
+    <p><strong>Email:</strong> <%= currentUser.email %></p>
+  </div>
+
+  <!-- Optional: Add more user details if you have them in your schema -->
+</div>
+
+<% } else { }%>
+
+<!-- Add some custom CSS if necessary -->
+<style>
+  .profile-image {
+    max-width: 150px;
+    height: auto;
+    border-radius: 50%;
+  }
+
+  .container {
+    margin-top: 50px;
+  }
+
+  .profile-section,
+  .user-details {
+    margin-bottom: 20px;
+  }
+</style>

@@ -1,0 +1,82 @@
+<% layout('layouts/boilerplate') %>
+<div class="container is-max-tablet mb-6 mt-1">
+  <div class="card">
+    <div class="card-image">
+      <figure class="image is-4by3">
+        <% if (feed.images.length > 0) { %>
+        <img src="<%= feed.images[0].url %>" alt="Item image">
+        <% } else { %>
+        <img src="https://bulma.io/assets/images/placeholders/1280x960.png" alt="Placeholder image" />
+        <% } %>
+      </figure>
+    </div>
+    <div class="card-content">
+      <div class="media">
+        <div class="media-left">
+          <figure class="image is-48x48">
+            <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Placeholder image" />
+          </figure>
+        </div>
+        <div class="media-content">
+          <p class="title is-5 mb-1"><%= feed.itemName %> KD <%= feed.price %></p>
+          <p>
+            <% if (feed.uploadedUser) { %>
+            @<%= feed.uploadedUser.username %>
+            <% } else { %>
+            <em>Unknown User</em>
+            <% } %>
+          </p>
+        </div>
+        <a class="button" href="/feed">Back</a>
+      </div>
+
+      <div class="content">
+        <%= feed.description %>
+        <br />
+        <% for (let tag of feed.tags) { %>
+        <a href="#">#<%= tag %></a>
+        <% } %>
+        <br />
+        <time datetime="<%= feed.createdAt.toISOString() %>"><%= feed.createdAt.toLocaleString() %></time>
+      </div>
+
+      <% if(currentUser){ %>
+      <div class="card-content">
+        <form class="columns" action="/feed/<%=feed._id%>/comments" method="POST">
+          <input class="input m-1" type="text" placeholder="add a comment" name="comment[body]" id="body" required>
+          <button class="button m-1" type="submit">send</button>
+        </form>
+      </div>
+      <% } %>
+      <div class="card-content">
+        <p class="title is-5">Comments</p>
+        <div class="content">
+          <% if (feed.comments.length > 0) { %>
+          <% feed.comments.forEach(function(comment) { %>
+          <article class="media">
+            <div class="content">
+              <% if (comment.uploadedUser) { %>
+              <strong><%= comment.uploadedUser.username %></strong>
+              <% } else { %>
+              <strong><em>Unknown User</em></strong>
+              <% } %>
+              <p><%= comment.body %></p>
+            </div>
+          </article>
+          <% }) %>
+          <% } else { %>
+          <p>No comments yet. Be the first to comment!</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card-image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+</style>

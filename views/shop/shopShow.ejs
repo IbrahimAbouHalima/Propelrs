@@ -1,0 +1,209 @@
+<% layout('layouts/boilerplate')%>
+<nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="/shop">Shop</a></li>
+    <li><a href="/shop/<%= shop.department%>"><%= shop.department %></a></li>
+    <li><a href="/shop/<%= shop.department%>/<%=shop.category%>"><%=shop.category%></a></li>
+    <li><a href="/shop/<%= shop.department%>/<%=shop.category%>/<%=shop.itemName %>"><%= shop.itemName %></a></li>
+  </ul>
+</nav>
+<div class="columns mx-3 my-3">
+  <div class="column is-2">
+    <aside class="menu">
+      <p class="menu-label">Department</p>
+      <ul class="menu-list">
+        <li>
+          <a href="#" class="toggle-button"> Electronics </a>
+          <ul class="subdepartment m-0">
+            <li><a>Phones</a></li>
+            <li><a>Computers</a></li>
+            <li><a>Accessories</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Clothing </a>
+          <ul class="subdepartment m-0">
+            <li><a>Men</a></li>
+            <li><a>Women</a></li>
+            <li><a>Children</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Groceries </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Services </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Real Estate </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Automotive </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Hotels </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="toggle-button"> Travel </a>
+          <ul class="subdepartment m-0">
+            <li><a>Fruits</a></li>
+            <li><a>Vegetables</a></li>
+            <li><a>Dairy</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="container is-max-tablet">
+    <div class="card">
+      <div class="card-image">
+        <figure class="image is-4by3">
+          <img src="<%= shop.images[0].url %>" alt="<%= shop.itemName %> image" />
+        </figure>
+      </div>
+      <div class="card-content">
+        <h1 class="title"><%= shop.itemName %></h1>
+        <p class="subtitle">Price: $<%= shop.price %></p>
+        <p><strong>Description:</strong> <%= shop.description %></p>
+        <p><strong>Tags:</strong> <%= shop.tags.join(", ") %></p>
+
+        <h2 class="title is-4">Reviews</h2>
+        <% if (shop.reviews.length > 0) { %>
+        <div class="reviews">
+          <ul>
+            <% shop.reviews.forEach(review => { %>
+            <li class="box">
+              <div class="media">
+                <div class="media-left">
+                  <figure class="image is-48x48">
+                    <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="User avatar" />
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <p class="title is-5"><%= review.uploadedUser.username %></p>
+                  <p class="subtitle is-6"><%= review.rating %> Stars</p>
+                  <div class="content"><%= review.body %></div>
+                </div>
+              </div>
+              <time datetime="2021-01-01">11:09 PM - 1 Jan 2021</time> <!-- Replace with actual date -->
+            </li>
+            <% }); %>
+          </ul>
+        </div>
+        <% } else { %>
+        <p>No reviews yet.</p>
+        <% } %>
+
+        <div class="review-form">
+          <h3 class="title is-5">Add a Review</h3>
+          <form action="/shop/<%= shop._id %>/reviews" method="POST">
+            <div class="field">
+              <label class="label">Your Review</label>
+              <div class="control">
+                <textarea name="review[body]" class="textarea" placeholder="Write your review here..." required></textarea>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Rating</label>
+              <div class="control">
+                <input type="number" name="review[rating]" class="input" min="1" max="5" required placeholder="Rate from 1 to 5" />
+              </div>
+            </div>
+            <button type="submit" class="button is-primary">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <a href="/shop" class="button is-link">Back to Shop</a>
+  </div>
+
+
+
+  <style>
+    .card-image img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+
+    .toggle-button {
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .arrow {
+      margin-right: 10px;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .subdepartment {
+      margin-left: 20px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.5s ease, opacity 0.5s ease;
+    }
+
+    .subdepartment.active {
+      max-height: 500px;
+      opacity: 1;
+    }
+
+    .expanded .arrow {
+      transform: rotate(90deg);
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleButtons = document.querySelectorAll('.toggle-button');
+
+      toggleButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          const subdepartment = button.nextElementSibling; // Get the corresponding subdepartment
+          const arrow = button.querySelector('.arrow'); // Get the arrow
+
+          subdepartment.classList.toggle('active'); // Toggle the active class
+
+          if (subdepartment.classList.contains('active')) {
+            arrow.textContent = '▼'; // Change to expanded arrow
+          } else {
+            arrow.textContent = '▶'; // Change to collapsed arrow
+          }
+        });
+      });
+
+      document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
+    });
+  </script>

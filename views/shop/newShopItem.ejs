@@ -1,0 +1,74 @@
+<% layout('layouts/boilerplate')%>
+
+<div class="container is-max-desktop">
+  <div class="box my-5">
+    <form action="/shop" method="POST" enctype="multipart/form-data">
+      <div class="field">
+        <label class="label">Item name</label>
+        <div class="control">
+          <input class="input" type="text" name="itemName" placeholder="item name" id="itemName">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Price</label>
+        <div class="control">
+          <input class="input" type="number" name="price" placeholder="price" id="price">
+        </div>
+      </div>
+
+      <div class="file">
+        <label class="file-label">
+          <input class="file-input" type="file" name="images" />
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label"> Upload an image… </span>
+          </span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="label">Description</label>
+        <div class="control">
+          <textarea class="textarea" name="description" placeholder="please write a description" id="description"></textarea>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Category</label>
+        <div class="control">
+          <div class="select">
+            <select name="category" required>
+              <option value="">Select a category</option>
+              <option value="phones">Phones</option>
+              <option value="computers">Computers</option>
+              <option value="accessories">Accessories</option>
+              <option value="men">Men</option>
+              <option value="women">Women</option>
+              <option value="children">Children</option>
+              <option value="fruits">Fruits</option>
+              <option value="vegetables">Vegetables</option>
+              <option value="dairy">Dairy</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">tags</label>
+        <div class="control">
+          <input class="input" type="text" name="tags" placeholder="#trending" id="Tags">
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-link" type="submit">Submit</button>
+        </div>
+        <div class="control">
+          <a class="button is-link is-light" href="/shop">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

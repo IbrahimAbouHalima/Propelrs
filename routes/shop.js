@@ -4,21 +4,8 @@ const Shop = require('../models/shop');
 const multer = require('multer');
 const path = require('path');
 const { requireLogin } = require('../middleware');
-const { storage, cloudinary } = require('../cloudinary');
-
-/*
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/shopImages'); // Set the destination where images will be stored
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Set a unique name for the file
-    }
-});
-*/
-
-const upload = multer({ storage });
+const { storage } = require('../cloudinary');
+const upload = multer({ storage })
 
 router.get('/', async (req, res) => {
     try {

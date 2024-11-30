@@ -4,7 +4,8 @@ const Feed = require('../models/feed');
 const multer = require('multer');
 const path = require('path');
 const { requireLogin } = require('../middleware');
-const { storage, cloudinary } = require('../cloudinary');
+const { storage } = require('../cloudinary');
+const upload = multer({ storage })
 
 
 /*
@@ -19,7 +20,6 @@ const storage = multer.diskStorage({
 });
 */
 
-const upload = multer({ storage });
 
 router.get('/', async (req, res) => {
     try {

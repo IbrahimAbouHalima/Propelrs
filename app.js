@@ -165,6 +165,6 @@ app.get('/marketing', (req, res) => {
 })
 
 const port = process.env.PORT || 4000;
-app.listen(port, () => {
-    console.log(`Serving on port ${port}`)
-})
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Serving on port ${port}`);
+});

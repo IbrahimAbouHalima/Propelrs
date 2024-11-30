@@ -8,19 +8,6 @@ const { storage } = require('../cloudinary');
 const upload = multer({ storage })
 
 
-/*
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/feedImages'); // Set the destination where images will be stored
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Set a unique name for the file
-    }
-});
-*/
-
-
 router.get('/', async (req, res) => {
     try {
         const feeds = await Feed.find()
@@ -33,7 +20,8 @@ router.get('/', async (req, res) => {
                 },
             })
             .sort({ createdAt: -1 });
-        res.render('feed/feed.ejs', { feeds });
+
+        res.render('feed/feed.ejs', { feeds, currentUser: req.user });
     } catch (err) {
         console.error(err);
         req.flash('error', 'Could not retrieve feed items.');
@@ -94,5 +82,41 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/edit', requireLogin, async (req, res) => {
     res.render('feed/show.ejs')
 })
+
+router.post('/:id/like', requireLogin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id; // Get the current user ID
+        const feed = await Feed.findById(id);
+
+        if (!feed) {
+            return res.status(404).json({ error: 'Post not found.' });
+        }
+
+        // Check if the user has already liked the post
+        const userIndex = feed.likedBy.indexOf(userId);
+
+        if (userIndex === -1) {
+            // If not liked, add the user to likedBy and increment likes
+            feed.likedBy.push(userId);
+            feed.likes += 1;
+        } else {
+            // If already liked, remove the user from likedBy and decrement likes
+            feed.likedBy.splice(userIndex, 1);
+            feed.likes -= 1;
+        }
+
+        await feed.save();
+
+        res.json({
+            success: true,
+            likes: feed.likes,
+            liked: userIndex === -1 // Whether the post is now liked
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Could not toggle like status.' });
+    }
+});
 
 module.exports = router

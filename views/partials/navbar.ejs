@@ -15,8 +15,8 @@
       <a href="/profile">
         <div class="navbar-item">
           <!-- Profile Picture -->
-          <figure class="image is-32x32" style="margin-right: 10px;">
-            <img class="is-rounded" src="public\images\profiles\20190902_002421.jpg" alt="Profile Picture">
+          <figure class="image is-40x40 is-inline-block">
+            <img class="navbar-profile-image" src="<%= currentUser.profilePicture && currentUser.profilePicture[0] ? currentUser.profilePicture[0].url : 'https://bulma.io/images/placeholders/128x128.png' %>" alt="Your Profile Picture" />
           </figure>
 
           <!-- Username -->
@@ -80,3 +80,16 @@
     </div>
   </div>
 </nav>
+
+<style>
+  .navbar-profile-image {
+    width: 40px;
+    /* Adjust the width */
+    height: 40px;
+    /* Adjust the height to match */
+    border-radius: 50%;
+    /* Ensure it's a circle */
+    object-fit: cover;
+    /* Maintain aspect ratio */
+  }
+</style>

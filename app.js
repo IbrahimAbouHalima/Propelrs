@@ -113,6 +113,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    next();
+});
+
 app.use('/', userRoutes);
 app.use('/feed', feedRoutes);
 app.use('/feed', commentRoutes);

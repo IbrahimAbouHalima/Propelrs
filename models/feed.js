@@ -15,13 +15,15 @@ const feedSchema = new Schema({
     },
     price: Number,
     description: String,
+    likes: { type: Number, default: 0 },
+    likedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     comments: [
         { type: Schema.Types.ObjectId, ref: 'Comment' }
     ],
     tags: [String],
     createdAt: {
         type: Date,
-        default: Date.now // Automatically set createdAt to the current date/time
+        default: Date.now
     }
 })
 

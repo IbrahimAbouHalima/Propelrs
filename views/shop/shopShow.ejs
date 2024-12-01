@@ -22,9 +22,9 @@
         <div class="media-left">
           <figure class="image is-48x48">
             <% if (shop.uploadedUser.profilePicture.length > 0) { %>
-            <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profile-pic">
+            <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
             <% } else { %>
-            <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture" class="profile-pic">
+            <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture" class="profilePicture">
             <% } %>
           </figure>
         </div>
@@ -41,11 +41,11 @@
             <li class="box">
               <div class="media">
                 <div class="media-left">
-                  <figure class="profile-pic">
+                  <figure class="profilePicture">
                     <% if (review.uploadedUser.profilePicture && review.uploadedUser.profilePicture.length > 0) { %>
-                    <img src="<%= review.uploadedUser.profilePicture[0].url %>" alt="<%= review.uploadedUser.username %>'s profile picture" class="profile-pic">
+                    <img src="<%= review.uploadedUser.profilePicture[0].url %>" alt="<%= review.uploadedUser.username %>'s profile picture" class="profilePicture">
                     <% } else { %>
-                    <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture" class="profile-pic">
+                    <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture" class="profilePicture">
                     <% } %>
                   </figure>
                 </div>
@@ -125,7 +125,7 @@
     }
 
     /* Circular profile pictures */
-    .profile-pic {
+    .profilePicture {
       border-radius: 50%;
       object-fit: cover;
       width: 48px;

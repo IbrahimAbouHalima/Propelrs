@@ -6,136 +6,74 @@
     background-position: center;
     background-repeat: no-repeat;
   }
+
+  /* Make profile images circular */
+  .media-left .image img {
+    border-radius: 50%;
+    /* This makes the image a circle */
+  }
 </style>
 
 <section class="hero is-medium is-primary">
   <div class="hero-body">
     <p class="title">Shop</p>
     <p class="subtitle">Find any service from local stores</p>
-    <% if(currentUser&& currentUser.accountType === 'business'){ %><a href="/shop/newItem"><button class="button"> add item</button></a> <% } %>
+    <% if(currentUser && currentUser.accountType === 'business'){ %>
+    <a href="/shop/newItem"><button class="button"> add item</button></a>
+    <% } %>
   </div>
 </section>
 
-
 <div class="columns mx-3 my-3">
-  <div class="column is-2">
-    <aside class="menu">
-      <p class="menu-label">Department</p>
-      <ul class="menu-list">
-        <li>
-          <a href="#" class="toggle-button"> Electronics </a>
-          <ul class="subdepartment m-0">
-            <li><a href="/shop?category=phones">Phones</a></li>
-            <li><a href="/shop?category=computers">Computers</a></li>
-            <li><a href="/shop?category=accessories">Accessories</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Fashion </a>
-          <ul class="subdepartment m-0">
-            <li><a href="/shop?category=men">Men</a></li>
-            <li><a href="/shop?category=women">Women</a></li>
-            <li><a href="/shop?category=children">Children</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Groceries </a>
-          <ul class="subdepartment m-0">
-            <li><a href="/shop?category=fruits">Fruits</a></li>
-            <li><a href="/shop?category=vegetables">Vegetables</a></li>
-            <li><a href="/shop?category=dairy">Dairy</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Services </a>
-          <ul class="subdepartment m-0">
-            <li><a>Fruits</a></li>
-            <li><a>Vegetables</a></li>
-            <li><a>Dairy</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Real Estate </a>
-          <ul class="subdepartment m-0">
-            <li><a>Fruits</a></li>
-            <li><a>Vegetables</a></li>
-            <li><a>Dairy</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Automotive </a>
-          <ul class="subdepartment m-0">
-            <li><a>Fruits</a></li>
-            <li><a>Vegetables</a></li>
-            <li><a>Dairy</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Hotels </a>
-          <ul class="subdepartment m-0">
-            <li><a>Fruits</a></li>
-            <li><a>Vegetables</a></li>
-            <li><a>Dairy</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#" class="toggle-button"> Travel </a>
-          <ul class="subdepartment m-0">
-            <li><a>Fruits</a></li>
-            <li><a>Vegetables</a></li>
-            <li><a>Dairy</a></li>
-          </ul>
-        </li>
-      </ul>
-    </aside>
-  </div>
-
-
-
+  <%- include('../partials/shopCategory.ejs') %>
 
   <div class="column mx-4">
-    <div class="columns is-multiline"">
-      <% for(let shop of shops){ %>
-      <div class=" column is-2">
-      <a href="shop/<%=shop._id%>">
-        <div class="card">
-          <div class="card-image">
-            <figure class="image is-4by3">
-              <% if (shop.images.length > 0) { %>
-              <img src="<%=shop.images[0].url%>">
-              <% } else { %>
-              <img src="https://bulma.io/assets/images/placeholders/1280x960.png" />
-              <% } %>
-            </figure>
-          </div>
-          <div class="card-content">
-            <div class="media">
-              <div class="media-left">
-                <figure class="image is-48x48">
-                  <img src="https://bulma.io/assets/images/placeholders/96x96.png" />
-                </figure>
-              </div>
-              <div class="media-content">
-                <p class="title is-4"><%= shop.itemName %> </p>
-                <p class="title is-4"> <%=shop.uploadedUser.name%></p>
-                <p class="subtitle is-6"><%=shop.uploadedUser.username%></p>
-                <p class="subtitle is-4"> KD <%=shop.price%></p>
-              </div>
+    <div class="columns is-multiline">
+      <% for (let shop of shops) { %>
+      <div class="column is-2">
+        <a href="shop/<%= shop._id %>">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-4by3">
+                <% if (shop.images.length > 0) { %>
+                <img src="<%= shop.images[0].url %>">
+                <% } else { %>
+                <img src="https://bulma.io/assets/images/placeholders/1280x960.png" />
+                <% } %>
+              </figure>
             </div>
+            <div class="card-content">
+              <div class="media">
+                <div class="media-left">
+                  <figure class="image is-48x48">
+                    <% if (shop.uploadedUser.profilePicture.length > 0) { %>
+                    <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture">
+                    <% } else { %>
+                    <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture">
+                    <% } %>
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <p class="title is-4"><%= shop.itemName %> </p>
+                  <p class="title is-4"> <%= shop.uploadedUser.name %></p>
+                  <p class="subtitle is-6"><%= shop.uploadedUser.username %></p>
+                  <p class="subtitle is-4"> KD <%= shop.price %></p>
+                </div>
+              </div>
 
-            <div class="content">
-              <%= shop.description %>
-              <a href="#"><%=shop.tags %></a>
-              <br />
-              <time datetime="<%= shop.createdAt.toISOString() %>"><%= shop.createdAt.toLocaleString() %></time>
+              <div class="content">
+                <%= shop.description %>
+                <a href="#"><%= shop.tags %></a>
+                <br />
+                <time datetime="<%= shop.createdAt.toISOString() %>"><%= shop.createdAt.toLocaleString() %></time>
+              </div>
             </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
+      <% } %>
     </div>
-    <% } %>
   </div>
-</div>
 </div>
 </div>
 

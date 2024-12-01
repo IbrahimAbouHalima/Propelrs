@@ -12,7 +12,8 @@ const businessSchema = new Schema({
     },
     businessIndustry: {
         type: String,
-        enum: ['Fashion',
+        enum: [
+            'Fashion',
             'Electronics',
             'Health & Beauty',
             'Home & Garden',
@@ -22,7 +23,12 @@ const businessSchema = new Schema({
             'Real Estate',
             'Automotive',
             'Hotels',
-            'Travel'],
+            'Travel',
+            'Home & Furniture',
+            'Sports & Fitness',
+            'Books & Stationery',
+            'Health & Wellness'
+        ],
         required: true
     },
     businessDescription: {

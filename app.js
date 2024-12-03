@@ -17,6 +17,8 @@ const reviewRoutes = require('./routes/reviews.js');
 const feedRoutes = require('./routes/feed.js');
 const commentRoutes = require('./routes/comments.js');
 const startBusiness = require('./routes/business.js');
+const jobRoutes = require('./routes/jobs.js');
+const issueRoutes = require('./routes/issues.js');
 
 const User = require('./models/user');
 const Chat = require('./models/chat');
@@ -105,19 +107,7 @@ const storage = multer.diskStorage({
     }
 });
 
-io.on('connection', (socket) => {
-    console.log('A user connected');
 
-    socket.on('sendMessage', (data) => {
-        console.log('Message received:', data);
-
-        io.emit('newMessage', data);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
 const upload = multer({ storage: storage });
 
 app.use((req, res, next) => {
@@ -135,7 +125,10 @@ app.use('/feed', feedRoutes);
 app.use('/feed', commentRoutes);
 app.use('/shop', shopRoutes);
 app.use('/shop', reviewRoutes);
+app.use('/jobs', jobRoutes);
 app.use('/', startBusiness);
+app.use('/issues', issueRoutes);
+
 
 app.get('/', (req, res) => {
     res.render('home.ejs');
@@ -168,9 +161,6 @@ app.post('/upgrade-account', async (req, res) => {
     }
 });
 
-app.get('/jobs', (req, res) => {
-    res.render('jobs.ejs');
-});
 
 app.get('/about', (req, res) => {
     res.render('about.ejs');

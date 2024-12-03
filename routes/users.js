@@ -18,7 +18,7 @@ router.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
     failureFlash: true,
 }), (req, res) => {
-    res.redirect('/feed');  // Redirect to the shop after successful login
+    res.redirect('/feed');
 });
 
 router.get('/signup', (req, res) => {
@@ -101,10 +101,9 @@ router.get('/users/:id', async (req, res) => {
         }
 
         const currentUser = req.user;
-        // Fetch the chat between the logged-in user and the profile user
         const chat = await Chat.findOne({
             participants: { $all: [currentUser._id, userProfile._id] }
-        }).populate('messages.sender', 'username');  // Optional: populate sender info
+        }).populate('messages.sender', 'username');
 
         const chatMessages = chat ? chat.messages : [];
 
@@ -115,7 +114,5 @@ router.get('/users/:id', async (req, res) => {
         res.redirect('/feed');
     }
 });
-
-
 
 module.exports = router

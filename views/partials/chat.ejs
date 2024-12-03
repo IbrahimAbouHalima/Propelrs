@@ -1,5 +1,5 @@
 <section class="section">
-  <div id="chat-container" class="container box" style="max-width: 400px; margin: 0 auto; position: fixed; bottom: 0; right: 20px; z-index: 999; transition: all 0.3s ease;">
+  <div id="chat-container" class="container box" style="max-width: 450px; margin: 0 auto; position: fixed; bottom: 0; right: 0px; z-index: 999; transition: all 0.3s ease;">
     <div id="chat-header" class="notification is-primary" style="padding: 10px; cursor: pointer;">
       Chat
     </div>
@@ -23,27 +23,25 @@
     const userName = '<%= currentUser ? currentUser.username : "Guest" %>';
     const socket = io();
 
-    // Toggle the chat window when clicking the header
     document.getElementById('chat-header').addEventListener('click', () => {
       const chatWindow = document.getElementById('chat-window');
 
       if (chatWindow.style.display === 'none') {
-        chatWindow.style.display = 'block'; // Open the chat
+        chatWindow.style.display = 'block';
         setTimeout(() => {
-          chatWindow.style.opacity = 1; // Fade in the chat window
-          chatWindow.style.height = '300px'; // Set a height for the expanded window
+          chatWindow.style.opacity = 1;
+          chatWindow.style.height = '300px';
         }, 10);
       } else {
-        chatWindow.style.opacity = 0; // Fade out the chat window
-        chatWindow.style.height = '0'; // Collapse the chat window to height 0
+        chatWindow.style.opacity = 0;
+        chatWindow.style.height = '0';
 
         setTimeout(() => {
-          chatWindow.style.display = 'none'; // Hide the chat window after transition
-        }, 300); // Match the transition duration
+          chatWindow.style.display = 'none';
+        }, 300);
       }
     });
 
-    // Send message on click
     document.getElementById('sendBtn').addEventListener('click', () => {
       const message = document.getElementById('messageInput').value;
       if (message) {
@@ -51,18 +49,17 @@
           message,
           userName
         });
-        document.getElementById('messageInput').value = ''; // Clear input field
+        document.getElementById('messageInput').value = '';
       }
     });
 
-    // Listen for new messages from the server
     socket.on('newMessage', (data) => {
       const messagesContainer = document.getElementById('messages');
       const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message', 'notification', 'is-light');
+      messageDiv.classList.add('message', 'is-light');
       messageDiv.innerHTML = `<strong>${data.userName}:</strong> <p>${data.message}</p>`;
       messagesContainer.appendChild(messageDiv);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
   </script>
 </section>

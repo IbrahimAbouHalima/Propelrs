@@ -27,3 +27,10 @@ module.exports.checkPostOwnership = async (req, res, next) => {
         res.redirect('/feed');
     }
 };
+
+module.exports.isAdmin = (req, res, next) => {
+    if (req.user && req.user.accountType === 'admin') {
+        return next();
+    }
+    res.status(403).send('Access denied.');
+};

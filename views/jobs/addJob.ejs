@@ -1,0 +1,38 @@
+<% layout('layouts/boilerplate')%>
+<div class="container is-max-tablet">
+  <form action="/jobs/addJob" method="POST">
+    <div class="field">
+      <label class="label">Title</label>
+      <div class="control">
+        <input class="input" type="text" name="title" required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Department</label>
+      <div class="control">
+        <input class="input" type="text" name="department" required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Business</label>
+      <div class="control">
+        <div class="select">
+          <select name="businessId" required>
+            <% businesses.forEach(business => { %>
+            <option value="<%= business._id %>"><%= business.businessName %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Salary Range</label>
+      <div class="control">
+        <input class="input" type="number" name="salaryRange" required>
+      </div>
+    </div>
+    <div class="control">
+      <button class="button is-primary">Add Job</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+<div class="container is-max-tablet">
+  <% if (currentUser) { %>
+  <a class="button" href="/jobs/addjob">Add a job</a>
+  <% } else { %>
+  <p>You miss all the shots you don't take.</p>
+  <% } %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Department</th>
+        <th>Company</th>
+        <th>Date</th>
+        <th>Salary Range</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>Title</th>
+        <th>Department</th>
+        <th>Company</th>
+        <th>Date</th>
+        <th>Salary Range</th>
+      </tr>
+    </tfoot>
+    <tbody>
+      <% if (jobs.length > 0) { %>
+      <% jobs.forEach(job => { %>
+      <tr>
+        <td><%= job.title %></td>
+        <td><%= job.department %></td>
+        <td><%= job.company.businessName %></td>
+        <td><%= new Date(job.date).toLocaleDateString() %></td>
+        <td><%= job.salaryRange %></td>
+      </tr>
+      <% }); %>
+      <% } else { %>
+      <tr>
+        <td colspan="5" class="has-text-centered">No jobs available</td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

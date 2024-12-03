@@ -1,0 +1,32 @@
+<% layout('layouts/boilerplate') %>
+<div class="container is-max-desktop">
+  <h1 class="title">Reported Issues</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Reported By</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (issues.length > 0) { %>
+      <% issues.forEach(issue => { %>
+      <tr>
+        <td><%= issue.title %></td>
+        <td><%= issue.description %></td>
+        <td><%= issue.reportedBy.username %></td>
+        <td><%= issue.status %></td>
+        <td><%= new Date(issue.createdAt).toLocaleDateString() %></td>
+      </tr>
+      <% }) %>
+      <% } else { %>
+      <tr>
+        <td colspan="5" class="has-text-centered">No issues reported yet.</td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

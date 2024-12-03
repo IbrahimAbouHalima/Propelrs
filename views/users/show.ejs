@@ -12,7 +12,6 @@
     </div>
   </div>
 
-  <!-- Chat Section -->
   <div class="chat-box mt-5">
     <div id="messages">
       <% if (chatMessages && chatMessages.length > 0) { %>
@@ -36,12 +35,10 @@
     const senderId = "<%= currentUser._id %>";
     const receiverId = "<%= user._id %>";
 
-    // Debug log for socket connection
     socket.on('connect', () => {
       console.log('Socket connected');
     });
 
-    // Handle receiving new messages
     socket.on('newMessage', (message) => {
       console.log('New message received:', message);
       const messagesContainer = document.getElementById('messages');
@@ -50,7 +47,6 @@
       messagesContainer.appendChild(messageDiv);
     });
 
-    // Handle sending new messages
     document.getElementById('send-message').addEventListener('click', () => {
       const messageInput = document.getElementById('chat-input');
       const message = messageInput.value.trim();

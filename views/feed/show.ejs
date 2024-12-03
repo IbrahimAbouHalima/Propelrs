@@ -16,24 +16,22 @@
           <div class="media-left">
             <a href="/users/<%= feed.uploadedUser ? feed.uploadedUser._id : '#' %>">
               <img class="is-rounded" src="<%= feed.uploadedUser && feed.uploadedUser.profilePicture.length > 0 ? feed.uploadedUser.profilePicture[0].url : 'https://bulma.io/assets/images/placeholders/96x96.png' %>" alt="User avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" />
+              <% if (feed.uploadedUser) { %>
+              <a href="/users/<%= feed.uploadedUser ? feed.uploadedUser._id : '#' %>">
+                @<%= feed.uploadedUser.username %>
+              </a>
+              <% } else { %>
+              <em>Unknown User</em>
+              <% } %>
             </a>
           </div>
         </div>
         <div class="media-content">
-          <p class="title is-5 mb-1"><%= feed.itemName %> KD <%= feed.price %></p>
-          <p>
-            <% if (feed.uploadedUser) { %>
-            <a href="/users/<%= feed.uploadedUser ? feed.uploadedUser._id : '#' %>">
-              @<%= feed.uploadedUser.username %>
-            </a>
-            <% } else { %>
-            <em>Unknown User</em>
-            <% } %>
-          </p>
         </div>
         <a class="button" href="/feed">Back</a>
       </div>
       <div class="content">
+        <p class="title is-5 mb-1"><%= feed.itemName %> KD <%= feed.price %></p>
         <%= feed.description %>
         <br />
         <% for (let tag of feed.tags) { %>
@@ -43,24 +41,7 @@
         <time datetime="<%= feed.createdAt.toISOString() %>"><%= feed.createdAt.toLocaleString() %></time>
       </div>
 
-      <div class="level">
-        <div class="level-left">
-          <% if (currentUser) { %>
-          <button class="button is-small is-light like-button" data-id="<%= feed._id %>" data-liked="<%= feed.likedBy.includes(currentUser._id) %>">
-            <% if (feed.likedBy.includes(currentUser._id)) { %>
-            (￣︶￣)♥
-            <% } else { %>
-            (￣︶￣)↗
-            <% } %>
-          </button>
-          <% } else { %>
-          <button class="button is-small is-light" disabled>
-            Login to like
-          </button>
-          <% } %>
-          <span class="ml-2 like-count" id="like-count-<%= feed._id %>"><%= feed.likes || 0 %> likes</span>
-        </div>
-      </div>
+      <%- include('../partials/likeButton')%>
 
       <% if (currentUser && feed.uploadedUser && feed.uploadedUser._id.equals(currentUser._id)) { %>
       <div class="buttons">
@@ -105,38 +86,6 @@
     </div>
   </div>
 </div>
-
-<script>
-  document.querySelectorAll('.like-button').forEach(button => {
-    button.addEventListener('click', async () => {
-      const feedId = button.getAttribute('data-id');
-      const likeCountSpan = document.getElementById(`like-count-${feedId}`);
-      const isLiked = button.getAttribute('data-liked') === 'true';
-
-      try {
-        const response = await fetch(`/feed/${feedId}/like`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          likeCountSpan.textContent = `${data.likes} likes`;
-          button.setAttribute('data-liked', data.liked);
-
-          // Update button text based on the like status
-          button.innerHTML = data.liked ? '(￣︶￣)♥' : '(￣︶￣)↗';
-        } else {
-          console.error('Failed to toggle like status.');
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  });
-</script>
 
 <style>
   .card-image img {

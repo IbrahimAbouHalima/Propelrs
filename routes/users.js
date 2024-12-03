@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport')
 const User = require('../models/user')
+const Chat = require('../models/chat');
 const { requireLogin } = require('../middleware');
 const multer = require('multer');
-const { storage } = require('../cloudinary'); // Ensure this is set up properly
+const { storage } = require('../cloudinary');
 const upload = multer({ storage });
 
 router.get('/login', (req, res) => {
@@ -93,18 +94,28 @@ router.post('/profile', requireLogin, upload.single('profilePicture'), async (re
 
 router.get('/users/:id', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
+        const userProfile = await User.findById(req.params.id);
+        if (!userProfile) {
             req.flash('error', 'User not found.');
-            return res.redirect('/feed'); // Redirect to a safe fallback
+            return res.redirect('/feed');
         }
-        res.render('users/show', { user });
+
+        const currentUser = req.user;
+        // Fetch the chat between the logged-in user and the profile user
+        const chat = await Chat.findOne({
+            participants: { $all: [currentUser._id, userProfile._id] }
+        }).populate('messages.sender', 'username');  // Optional: populate sender info
+
+        const chatMessages = chat ? chat.messages : [];
+
+        res.render('users/show', { user: userProfile, currentUser, chatMessages });
     } catch (err) {
         console.error(err);
         req.flash('error', 'Something went wrong.');
         res.redirect('/feed');
     }
 });
+
 
 
 module.exports = router

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const express = require('express')
+const express = require('express');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const path = require('path');
@@ -8,38 +8,43 @@ const LocalStrategy = require('passport-local');
 const session = require('express-session');
 const flash = require('connect-flash');
 const multer = require('multer');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const userRoutes = require('./routes/users');
 const shopRoutes = require('./routes/shop.js');
-const reviewRoutes = require('./routes/reviews.js')
+const reviewRoutes = require('./routes/reviews.js');
 const feedRoutes = require('./routes/feed.js');
 const commentRoutes = require('./routes/comments.js');
-const startBusiness = require('./routes/business.js')
+const startBusiness = require('./routes/business.js');
 
-const User = require('./models/user')
+const User = require('./models/user');
+const Chat = require('./models/chat');
 
 const app = express();
-app.engine('ejs', ejsMate)
+const server = http.createServer(app);
+const io = socketIo(server);
 
-app.use(express.urlencoded({ extended: true }))
+app.engine('ejs', ejsMate);
+app.use(express.urlencoded({ extended: true }));
 
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public/images/', express.static('./public/images'));
 app.use('/public/feedImages', express.static('./public/feedImages'));
 app.use('/public/shopImages', express.static('./public/shopImages'));
 
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 const dbUrl = process.env.DB_URL;
-const secret = process.env.SECRET
+const secret = process.env.SECRET;
 
 const MongoDBStore = require('connect-mongo');
 
-mongoose.connect(dbUrl,)
+mongoose.connect(dbUrl)
     .then(() => {
         console.log("Database connected");
     })
@@ -51,66 +56,68 @@ const store = new MongoDBStore({
     mongoUrl: dbUrl,
     secret,
     touchAfter: 24 * 60 * 60
-})
+});
 store.on('error', function (error) {
     console.error('MongoDBStore error:', error);
 });
-
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
     resave: false,
     saveUninitialized: true,
     cookie: {
-        httpOnly: true,  // Helps prevent cross-site scripting (XSS)
+        httpOnly: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 };
 
-
 app.use(session(sessionConfig));
-
 app.use(flash());
 
 app.use((req, res, next) => {
-    res.locals.success_flash = req.flash('success'); // For success messages
-    res.locals.error_flash = req.flash('error'); // For error messages
-    res.locals.currentUser = req.user; // To access current user
+    res.locals.success_flash = req.flash('success');
+    res.locals.error_flash = req.flash('error');
+    res.locals.currentUser = req.user;
     next();
 });
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use((req, res, next) => {
-    res.locals.currentUser = req.user;  // req.user is set by Passport when a user is logged in
-    next();
-});
-
 passport.use(new LocalStrategy(User.authenticate()));
-
-// Passport serialization and deserialization (necessary for session support)
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Define storage for the images
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         if (req.url.startsWith('/feed')) {
-            cb(null, './public/feedImages'); // Destination for feed images
+            cb(null, './public/feedImages');
         } else if (req.url.startsWith('/shop')) {
-            cb(null, './public/shopImages'); // Destination for shop images
+            cb(null, './public/shopImages');
         } else {
-            cb(new Error('Invalid route'), './public/defaultImages'); // Handle invalid routes
+            cb(new Error('Invalid route'), './public/defaultImages');
         }
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Filename format
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.on('sendMessage', (data) => {
+        console.log('Message received:', data);
+
+        io.emit('newMessage', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
 const upload = multer({ storage: storage });
 
 app.use((req, res, next) => {
@@ -131,20 +138,20 @@ app.use('/shop', reviewRoutes);
 app.use('/', startBusiness);
 
 app.get('/', (req, res) => {
-    res.render('home.ejs')
-})
+    res.render('home.ejs');
+});
 
 app.get('/index', (req, res) => {
-    res.render('index.ejs')
-})
+    res.render('index.ejs');
+});
 
 app.get('/startBusiness', (req, res) => {
-    res.render('startBusiness.ejs')
-})
+    res.render('startBusiness.ejs');
+});
 
 app.get('/suppliers', (req, res) => {
-    res.render('suppliers.ejs')
-})
+    res.render('suppliers.ejs');
+});
 
 app.post('/upgrade-account', async (req, res) => {
     try {
@@ -162,19 +169,20 @@ app.post('/upgrade-account', async (req, res) => {
 });
 
 app.get('/jobs', (req, res) => {
-    res.render('jobs.ejs')
-})
+    res.render('jobs.ejs');
+});
 
 app.get('/about', (req, res) => {
-    res.render('about.ejs')
-})
-
+    res.render('about.ejs');
+});
 
 app.get('/marketing', (req, res) => {
-    res.render('marketing.ejs')
-})
+    res.render('marketing.ejs');
+});
+
+require('./socket')(io);
 
 const port = process.env.PORT || 3000;
-app.listen(port, '0.0.0.0', () => {
+server.listen(port, '0.0.0.0', () => {
     console.log(`Serving on port ${port}`);
 });

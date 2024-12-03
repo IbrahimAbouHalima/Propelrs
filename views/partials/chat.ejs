@@ -1,39 +1,68 @@
-<div id="chat-window">
-  <div id="messages"></div>
-  <form id="message-form">
-    <input type="text" id="message-input" placeholder="Type your message" required />
-    <button type="submit">Send</button>
-  </form>
-</div>
+<section class="section">
+  <div id="chat-container" class="container box" style="max-width: 400px; margin: 0 auto; position: fixed; bottom: 0; right: 20px; z-index: 999; transition: all 0.3s ease;">
+    <div id="chat-header" class="notification is-primary" style="padding: 10px; cursor: pointer;">
+      Chat
+    </div>
+    <div id="chat-window" style="display: none; opacity: 0; height: 0; overflow: hidden;">
+      <div id="messages" class="" style="height: 250px; overflow-y: scroll; padding: 10px;">
+      </div>
+      <div class="field is-grouped">
+        <div class="control is-expanded">
+          <input type="text" id="messageInput" class="input" placeholder="Type your message" style="font-size: 14px; border: none;" />
+        </div>
+        <div class="control">
+          <button id="sendBtn" class="button is-primary is-small" style="font-size: 14px;">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<script>
-  const chatWindow = document.getElementById('messages');
-  const form = document.getElementById('message-form');
-  const input = document.getElementById('message-input');
+  <script src="/socket.io/socket.io.js"></script>
 
-  async function fetchMessages(chatId) {
-    const res = await fetch(`/chats/${chatId}`);
-    const chat = await res.json();
-    chatWindow.innerHTML = chat.messages
-      .map(msg => `<p><strong>${msg.sender.name}:</strong> ${msg.body}</p>`)
-      .join('');
-  }
+  <script>
+    const userName = '<%= currentUser ? currentUser.username : "Guest" %>';
+    const socket = io();
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const message = input.value;
+    // Toggle the chat window when clicking the header
+    document.getElementById('chat-header').addEventListener('click', () => {
+      const chatWindow = document.getElementById('chat-window');
 
-    await fetch(`/chats/${chatId}/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        body: message
-      }),
+      if (chatWindow.style.display === 'none') {
+        chatWindow.style.display = 'block'; // Open the chat
+        setTimeout(() => {
+          chatWindow.style.opacity = 1; // Fade in the chat window
+          chatWindow.style.height = '300px'; // Set a height for the expanded window
+        }, 10);
+      } else {
+        chatWindow.style.opacity = 0; // Fade out the chat window
+        chatWindow.style.height = '0'; // Collapse the chat window to height 0
+
+        setTimeout(() => {
+          chatWindow.style.display = 'none'; // Hide the chat window after transition
+        }, 300); // Match the transition duration
+      }
     });
 
-    input.value = '';
-    fetchMessages(chatId);
-  });
-</script>
+    // Send message on click
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const message = document.getElementById('messageInput').value;
+      if (message) {
+        socket.emit('sendMessage', {
+          message,
+          userName
+        });
+        document.getElementById('messageInput').value = ''; // Clear input field
+      }
+    });
+
+    // Listen for new messages from the server
+    socket.on('newMessage', (data) => {
+      const messagesContainer = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', 'notification', 'is-light');
+      messageDiv.innerHTML = `<strong>${data.userName}:</strong> <p>${data.message}</p>`;
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
+    });
+  </script>
+</section>

@@ -1,13 +1,66 @@
 <% layout('layouts/boilerplate') %>
+
 <div class="container is-max-tablet mt-5">
   <div class="card">
     <div class="card-content has-text-centered">
       <figure class="image is-128x128 is-inline-block">
-        <img src="<%= user.profilePicture.length > 0  ? user.profilePicture[0].url  : defaultUserImg %>" alt="<%= user.username || 'User' %>'s profile picture">
+        <img src="<%= user.profilePicture && user.profilePicture.length > 0 ? user.profilePicture[0].url : defaultUserImg %>" alt="<%= user.username %>'s profile picture">
       </figure>
-      <h1 class="title mt-4"><%= user.username || 'Unknown User' %></h1>
+      <h1 class="title mt-4"><%= user.username %></h1>
       <p class="subtitle"><%= user.email %></p>
       <p>Account Type: <%= user.accountType %></p>
     </div>
   </div>
-</div>
+
+  <!-- Chat Section -->
+  <div class="chat-box mt-5">
+    <div id="messages">
+      <% if (chatMessages && chatMessages.length > 0) { %>
+      <% chatMessages.forEach(message => { %>
+      <div class="message">
+        <strong><%= message.sender.username %>:</strong>
+        <p><%= message.body %></p>
+      </div>
+      <% }) %>
+      <% } else { %>
+      <p>No chat history available.</p>
+      <% } %>
+    </div>
+    <textarea id="chat-input" class="textarea" placeholder="Type a message"></textarea>
+    <button id="send-message" class="button is-primary mt-2">Send</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const senderId = "<%= currentUser._id %>";
+    const receiverId = "<%= user._id %>";
+
+    // Debug log for socket connection
+    socket.on('connect', () => {
+      console.log('Socket connected');
+    });
+
+    // Handle receiving new messages
+    socket.on('newMessage', (message) => {
+      console.log('New message received:', message);
+      const messagesContainer = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.textContent = message.text;
+      messagesContainer.appendChild(messageDiv);
+    });
+
+    // Handle sending new messages
+    document.getElementById('send-message').addEventListener('click', () => {
+      const messageInput = document.getElementById('chat-input');
+      const message = messageInput.value.trim();
+      if (message) {
+        socket.emit('newMessage', {
+          sender: senderId,
+          receiver: receiverId,
+          text: message
+        });
+        messageInput.value = '';
+      }
+    });
+  </script>

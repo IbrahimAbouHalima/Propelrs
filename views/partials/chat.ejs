@@ -1,0 +1,39 @@
+<div id="chat-window">
+  <div id="messages"></div>
+  <form id="message-form">
+    <input type="text" id="message-input" placeholder="Type your message" required />
+    <button type="submit">Send</button>
+  </form>
+</div>
+
+<script>
+  const chatWindow = document.getElementById('messages');
+  const form = document.getElementById('message-form');
+  const input = document.getElementById('message-input');
+
+  async function fetchMessages(chatId) {
+    const res = await fetch(`/chats/${chatId}`);
+    const chat = await res.json();
+    chatWindow.innerHTML = chat.messages
+      .map(msg => `<p><strong>${msg.sender.name}:</strong> ${msg.body}</p>`)
+      .join('');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = input.value;
+
+    await fetch(`/chats/${chatId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        body: message
+      }),
+    });
+
+    input.value = '';
+    fetchMessages(chatId);
+  });
+</script>

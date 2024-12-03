@@ -8,8 +8,6 @@ const LocalStrategy = require('passport-local');
 const session = require('express-session');
 const flash = require('connect-flash');
 const multer = require('multer');
-const { requireLogin } = require('./middleware.js'); //delete later
-
 
 const userRoutes = require('./routes/users');
 const shopRoutes = require('./routes/shop.js');
@@ -24,6 +22,9 @@ const app = express();
 app.engine('ejs', ejsMate)
 
 app.use(express.urlencoded({ extended: true }))
+
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/public/images/', express.static('./public/images'));
@@ -87,7 +88,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Configure Passport to use the LocalStrategy for User authentication
 passport.use(new LocalStrategy(User.authenticate()));
 
 // Passport serialization and deserialization (necessary for session support)
@@ -112,6 +112,11 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+app.use((req, res, next) => {
+    res.locals.defaultUserImg = 'https://res.cloudinary.com/djp8iklzi/image/upload/v1733059211/Propelrs/stmqni1huylwmtrivcks.jpg';
+    next();
+});
 
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;

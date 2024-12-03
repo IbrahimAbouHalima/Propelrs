@@ -20,22 +20,22 @@
 
     <div class="card-content">
       <div class="media">
-        <div class="media-left">
-          <img class="is-rounded" src="<%= feed.uploadedUser && feed.uploadedUser.profilePicture.length > 0 ? feed.uploadedUser.profilePicture[0].url : 'https://bulma.io/assets/images/placeholders/96x96.png' %>" alt="User avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" />
-        </div>
-        <div class="media-content">
-          <p class="title is-5 mb-1"><%= feed.itemName %> KD <%= feed.price %></p>
-          <p>
+        <a href="/users/<%= feed.uploadedUser ? feed.uploadedUser._id : '#' %>">
+          <div class="media-left">
+            <img class="is-rounded" src="<%= feed.uploadedUser && feed.uploadedUser.profilePicture.length > 0 ? feed.uploadedUser.profilePicture[0].url : 'https://bulma.io/assets/images/placeholders/96x96.png' %>" alt="User avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" />
             <% if (feed.uploadedUser) { %>
             @<%= feed.uploadedUser.username %>
             <% } else { %>
             <em>Unknown User</em>
             <% } %>
-          </p>
-        </div>
+          </div>
+        </a>
       </div>
 
       <div class="content">
+        <div class="media-content">
+          <p class="title is-5 mb-1"><%= feed.itemName %> KD <%= feed.price %></p>
+        </div>
         <%= feed.description %>
         <br />
         <% for (let tag of feed.tags) { %>
@@ -45,7 +45,6 @@
         <time datetime="<%= feed.createdAt.toISOString() %>"><%= feed.createdAt.toLocaleString() %></time>
       </div>
 
-      <!-- Like Button -->
       <div class="level">
         <div class="level-left">
           <% if (currentUser) { %>
@@ -65,7 +64,6 @@
         </div>
       </div>
 
-      <!-- Comments Section -->
       <div class="card-content pt-1">
         <p class="subtitle is-6"><%= feed.comments.length %> Comment<% if (feed.comments.length > 1) { %>s<% } %></p>
         <div class="content mt-1">
@@ -74,7 +72,9 @@
           <div class="media my-1">
             <div class="media-content">
               <div class="content">
-                <p><strong><%= comment.uploadedUser && comment.uploadedUser.username ? comment.uploadedUser.username : 'Unknown User' %></strong> <%= comment.body %></p>
+                <a href="/users/<%= comment.uploadedUser._id %>">
+                  <p><strong><%= comment.uploadedUser && comment.uploadedUser.username ? comment.uploadedUser.username : 'Unknown User' %></strong> <%= comment.body %></p>
+                </a>
               </div>
             </div>
           </div>
@@ -132,5 +132,11 @@
 
     .image.is-rounded {
       border-radius: 50%;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      font-family: inherit;
     }
   </style>

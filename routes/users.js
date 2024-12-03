@@ -68,6 +68,7 @@ router.get('/profile', requireLogin, (req, res) => {
     res.render('users/profile.ejs', { currentUser: req.user });
 
 })
+
 router.post('/profile', requireLogin, upload.single('profilePicture'), async (req, res) => {
     try {
         const user = req.user;
@@ -89,4 +90,21 @@ router.post('/profile', requireLogin, upload.single('profilePicture'), async (re
         res.redirect('/profile');
     }
 });
+
+router.get('/users/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            req.flash('error', 'User not found.');
+            return res.redirect('/feed'); // Redirect to a safe fallback
+        }
+        res.render('users/show', { user });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Something went wrong.');
+        res.redirect('/feed');
+    }
+});
+
+
 module.exports = router

@@ -14,14 +14,18 @@
       <div class="media">
         <div class="media-left">
           <div class="media-left">
-            <img class="is-rounded" src="<%= feed.uploadedUser && feed.uploadedUser.profilePicture.length > 0 ? feed.uploadedUser.profilePicture[0].url : 'https://bulma.io/assets/images/placeholders/96x96.png' %>" alt="User avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" />
+            <a href="/users/<%= feed.uploadedUser ? feed.uploadedUser._id : '#' %>">
+              <img class="is-rounded" src="<%= feed.uploadedUser && feed.uploadedUser.profilePicture.length > 0 ? feed.uploadedUser.profilePicture[0].url : 'https://bulma.io/assets/images/placeholders/96x96.png' %>" alt="User avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" />
+            </a>
           </div>
         </div>
         <div class="media-content">
           <p class="title is-5 mb-1"><%= feed.itemName %> KD <%= feed.price %></p>
           <p>
             <% if (feed.uploadedUser) { %>
-            @<%= feed.uploadedUser.username %>
+            <a href="/users/<%= feed.uploadedUser ? feed.uploadedUser._id : '#' %>">
+              @<%= feed.uploadedUser.username %>
+            </a>
             <% } else { %>
             <em>Unknown User</em>
             <% } %>
@@ -29,7 +33,6 @@
         </div>
         <a class="button" href="/feed">Back</a>
       </div>
-
       <div class="content">
         <%= feed.description %>
         <br />
@@ -59,6 +62,15 @@
         </div>
       </div>
 
+      <% if (currentUser && feed.uploadedUser && feed.uploadedUser._id.equals(currentUser._id)) { %>
+      <div class="buttons">
+        <a class="button is-info is-small" href="/feed/<%= feed._id %>/edit">Edit</a>
+        <form action="/feed/<%= feed._id %>?_method=DELETE" method="POST" style="display:inline;">
+          <button class="button is-danger is-small" type="submit">Delete</button>
+        </form>
+      </div>
+      <% } %>
+
       <% if(currentUser){ %>
       <div class="card-content">
         <form class="columns" action="/feed/<%=feed._id%>/comments" method="POST">
@@ -75,7 +87,9 @@
           <article class="media">
             <div class="content">
               <% if (comment.uploadedUser) { %>
-              <strong><%= comment.uploadedUser.username %></strong>
+              <a href="/users/<%= comment.uploadedUser._id %>">
+                <strong><%= comment.uploadedUser.username %></strong>
+              </a>
               <% } else { %>
               <strong><em>Unknown User</em></strong>
               <% } %>
@@ -129,5 +143,11 @@
     object-fit: cover;
     width: 100%;
     height: 100%;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    font-family: inherit;
   }
 </style>

@@ -1,0 +1,13 @@
+<% layout('layouts/boilerplate') %>
+<div class="container is-max-tablet mt-5">
+  <div class="card">
+    <div class="card-content has-text-centered">
+      <figure class="image is-128x128 is-inline-block">
+        <img src="<%= user.profilePicture.length > 0  ? user.profilePicture[0].url  : defaultUserImg %>" alt="<%= user.username || 'User' %>'s profile picture">
+      </figure>
+      <h1 class="title mt-4"><%= user.username || 'Unknown User' %></h1>
+      <p class="subtitle"><%= user.email %></p>
+      <p>Account Type: <%= user.accountType %></p>
+    </div>
+  </div>
+</div>

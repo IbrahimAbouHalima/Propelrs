@@ -1,10 +1,9 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <!-- Profile Section on the Left Side -->
     <% if (currentUser) { %>
     <a href="/profile">
       <div class="navbar-item py-0 mt-2">
-        <img class="image is-48x48" src="<%= currentUser.profilePicture && currentUser.profilePicture[0] ? currentUser.profilePicture[0].url : 'https://res.cloudinary.com/djp8iklzi/image/upload/v1733059211/Propelrs/stmqni1huylwmtrivcks.jpg' %>" alt="Your Profile Picture" style=" object-fit: cover;" />
+        <img class="image is-48x48" src="<%= currentUser.profilePicture && currentUser.profilePicture[0] ? currentUser.profilePicture[0].url : defaultUserImg  %>" alt="Your Profile Picture" style=" object-fit: cover;" />
         <span class="navbar-item">
           <strong><%= currentUser.username %></strong>
         </span>
@@ -12,7 +11,6 @@
     </a>
     <% } %>
 
-    <!-- Burger Icon (visible on mobile) -->
     <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
@@ -21,7 +19,6 @@
     </a>
   </div>
 
-  <!-- Navbar Menu -->
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
       <a class="navbar-item" href="/feed">
@@ -50,8 +47,6 @@
         Report an issue
       </a>
     </div>
-
-    <!-- Navbar End (Log in, Sign up, or Log out) -->
     <div class="navbar-end mx-2">
       <div class="navbar-item">
         <div class="buttons">
@@ -72,7 +67,6 @@
     </div>
   </div>
 </nav>
-
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);

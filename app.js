@@ -179,7 +179,7 @@ app.get('/terms', (req, res) => {
 
 require('./socket')(app);
 
-const port = process.env.PORT || 3000;
+const port = 3000;
 app.listen(port, '0.0.0.0', () => {
     console.log(`Serving on port ${port}`);
 });

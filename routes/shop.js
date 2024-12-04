@@ -9,21 +9,19 @@ const upload = multer({ storage })
 
 router.get('/', async (req, res) => {
     try {
-        const { category } = req.query; // Get the category from query parameters
+        const { category } = req.query;
         let filter = {};
-
-        // If a category is specified, filter by category; otherwise, show all
         if (category && category !== 'all') {
-            filter = { category }; // Only show items of the selected category
+            filter = { category };
         }
-
-        // Retrieve the items based on the filter (category)
         const shops = await Shop.find(filter).populate('uploadedUser');
-        res.render('./shop/shop.ejs', { shops, selectedCategory: category || 'all' });
+        res.render('./shop/shop.ejs', {
+            shops, selectedCategory: category || 'all', cart: req.session.cart || []
+        });
     } catch (err) {
         console.error(err);
         req.flash('error', 'Could not retrieve feed items.');
-        res.redirect('/'); // Redirect to an appropriate page if there is an error
+        res.redirect('/');
     }
 })
 
@@ -56,6 +54,39 @@ router.get('/newItem', requireLogin, (req, res) => {
     res.render('./shop/newShopItem.ejs')
 })
 
+router.get('/cart', (req, res) => {
+    res.render('shop/cart.ejs', { cart: req.session.cart });
+});
+
+router.post('/cart/add', async (req, res) => {
+    const { itemId } = req.body;
+    console.log('Received Item ID:', itemId);
+    try {
+        const item = await Shop.findById(itemId);
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        if (!req.session.cart) {
+            req.session.cart = [];
+        }
+        const cartItem = req.session.cart.find(i => i.id === itemId);
+        if (cartItem) {
+            cartItem.quantity += 1;
+        } else {
+            req.session.cart.push({
+                id: item._id,
+                name: item.itemName,
+                price: item.price,
+                quantity: 1,
+            });
+        }
+        res.json({ message: 'Item added to cart!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     try {
         const shop = await Shop.findById(req.params.id).populate('uploadedUser').populate({
@@ -76,6 +107,5 @@ router.get('/:id', async (req, res) => {
         res.redirect('/shop');
     }
 });
-
 
 module.exports = router

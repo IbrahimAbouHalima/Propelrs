@@ -2,18 +2,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const categoryEnum = [
-    'smartphones', 'laptops', 'televisions', 'cameras', 'audio-devices', // Electronics
-    "mens-wear", "womens-wear", "kids-wear", "footwear", "accessories", // Fashion
-    'fresh-fruits', 'fresh-vegetables', 'dairy-products', 'beverages', 'snacks', // Groceries
-    'cleaning-services', 'home-repairs', 'personal-care', 'pet-care', 'consulting', // Services
-    'residential', 'commercial', 'land', 'rental-properties', 'property-management', // Real Estate
-    'cars', 'spare-parts', 'motorcycles', 'car-accessories', 'car-services', // Automotive
-    'budget-hotels', 'luxury-hotels', 'beach-resorts', 'business-hotels', 'family-friendly', // Hotels
-    'flights', 'tour-packages', 'cruise-trips', 'adventure-travel', 'visa-services', // Travel
-    'furniture', 'kitchenware', 'decor', 'bedding', 'appliances', // Home & Furniture
-    'fitness-equipment', 'team-sports', 'outdoor-gear', 'yoga', 'cycling', // Sports & Fitness
-    'fiction', 'non-fiction', 'educational', 'office-supplies', 'art-supplies', // Books & Stationery
-    'fitness', 'personal-care', 'nutrition', 'medical-supplies', 'wellness-products' // Health & Wellness
+    'smartphones', 'laptops', 'televisions', 'cameras', 'audio-devices',
+    "mens-wear", "womens-wear", "kids-wear", "footwear", "accessories",
+    'fresh-fruits', 'fresh-vegetables', 'dairy-products', 'beverages', 'snacks',
+    'cleaning-services', 'home-repairs', 'personal-care', 'pet-care', 'consulting',
+    'residential', 'commercial', 'land', 'rental-properties', 'property-management',
+    'cars', 'spare-parts', 'motorcycles', 'car-accessories', 'car-services',
+    'budget-hotels', 'luxury-hotels', 'beach-resorts', 'business-hotels', 'family-friendly',
+    'flights', 'tour-packages', 'cruise-trips', 'adventure-travel', 'visa-services',
+    'furniture', 'kitchenware', 'decor', 'bedding', 'appliances',
+    'fitness-equipment', 'team-sports', 'outdoor-gear', 'yoga', 'cycling',
+    'fiction', 'non-fiction', 'educational', 'office-supplies', 'art-supplies',
+    'fitness', 'personal-care', 'nutrition', 'medical-supplies', 'wellness-products'
 ];
 
 const ImageSchema = new Schema({
@@ -26,7 +26,7 @@ const shopSchema = new Schema({
     itemName: String,
     category: {
         type: String,
-        enum: categoryEnum, // Use the array defined above
+        enum: categoryEnum,
         required: true,
     },
     uploadedUser: {

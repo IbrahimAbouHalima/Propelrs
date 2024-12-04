@@ -4,22 +4,29 @@ const passport = require('passport')
 const User = require('../models/user')
 const Chat = require('../models/chat');
 const { requireLogin } = require('../middleware');
+const { storeReturnTo } = require('../middleware');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
 const upload = multer({ storage });
+
+router.use(storeReturnTo);
 
 router.get('/login', (req, res) => {
     res.render('users/login.ejs')
 
 })
 
-router.post('/login', passport.authenticate('local', {
-    successRedirect: '/feed',
-    failureRedirect: '/login',
-    failureFlash: true,
-}), (req, res) => {
-    res.redirect('/feed');
-});
+router.post('/login',
+    passport.authenticate('local', {
+        failureRedirect: "/login",
+        keepSessionInfo: true
+    }),
+    (req, res) => {
+        const redirectUrl = req.session.returnTo || '/feed';
+        delete req.session.returnTo;
+        res.redirect(redirectUrl);
+    }
+);
 
 router.get('/signup', (req, res) => {
     res.render('users/signup.ejs')

@@ -8,8 +8,6 @@ const LocalStrategy = require('passport-local');
 const session = require('express-session');
 const flash = require('connect-flash');
 const multer = require('multer');
-const http = require('http');
-const socketIo = require('socket.io');
 
 const userRoutes = require('./routes/users');
 const shopRoutes = require('./routes/shop.js');
@@ -24,8 +22,6 @@ const User = require('./models/user');
 const Chat = require('./models/chat');
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
 
 app.engine('ejs', ejsMate);
 app.use(express.urlencoded({ extended: true }));
@@ -33,10 +29,10 @@ app.use(express.urlencoded({ extended: true }));
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public/images/', express.static('./public/images'));
-app.use('/public/feedImages', express.static('./public/feedImages'));
-app.use('/public/shopImages', express.static('./public/shopImages'));
+
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -64,7 +60,9 @@ store.on('error', function (error) {
 });
 
 const sessionConfig = {
-    secret: 'thisshouldbeabettersecret!',
+    store,
+    name: 'session',
+    secret: secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -120,6 +118,11 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+    console.log(`Request received: ${req.method} ${req.url}`);
+    next();
+});
+
 app.use('/', userRoutes);
 app.use('/feed', feedRoutes);
 app.use('/feed', commentRoutes);
@@ -170,9 +173,13 @@ app.get('/marketing', (req, res) => {
     res.render('marketing.ejs');
 });
 
-require('./socket')(io);
+app.get('/terms', (req, res) => {
+    res.render('terms.ejs');
+});
+
+require('./socket')(app);
 
 const port = process.env.PORT || 3000;
-server.listen(port, '0.0.0.0', () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Serving on port ${port}`);
 });

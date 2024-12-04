@@ -2,7 +2,6 @@
 <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
   <ul>
     <li><a href="/shop">Shop</a></li>
-    <li><a href="/shop/<%= shop.department%>"><%= shop.department %></a></li>
     <li><a href="/shop/<%= shop.department%>/<%=shop.category%>"><%=shop.category%></a></li>
     <li><a href="/shop/<%= shop.department%>/<%=shop.category%>/<%=shop.itemName %>"><%= shop.itemName %></a></li>
   </ul>
@@ -24,7 +23,7 @@
             <% if (shop.uploadedUser.profilePicture.length > 0) { %>
             <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
             <% } else { %>
-            <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture" class="profilePicture">
+            <img src="<%= defaultUserImg %>" alt="Default profile picture" class="profilePicture">
             <% } %>
           </figure>
         </div>
@@ -51,7 +50,20 @@
                 </div>
                 <div class="media-content">
                   <p class="title is-5"><%= review.uploadedUser.username %></p>
-                  <p class="subtitle is-6"><%= review.rating %> Stars</p>
+                  <p class="subtitle is-6">
+                    <% 
+                    let stars = ''; 
+                    const rating = review.rating;
+                    for (let i = 0; i < 5; i++) {
+                        if (i < rating) {
+                            stars += '⭐';
+                        } else {
+                            stars += '☆';
+                        }
+                    }
+                    %>
+                    <%= stars %> <%= review.rating %> Stars
+                  </p>
                   <div class="content"><%= review.body %></div>
                 </div>
               </div>
@@ -240,3 +252,5 @@
       }
     });
   </script>
+
+  <%- include('../partials/cart')%>

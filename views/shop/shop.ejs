@@ -1,18 +1,4 @@
 <% layout('layouts/boilerplate')%>
-<style>
-  .hero.is-medium {
-    background-image: url('images/shopPropelr.avif');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-
-  /* Make profile images circular */
-  .media-left .image img {
-    border-radius: 50%;
-    /* This makes the image a circle */
-  }
-</style>
 
 <section class="hero is-medium is-primary">
   <div class="hero-body">
@@ -49,7 +35,7 @@
                     <% if (shop.uploadedUser.profilePicture.length > 0) { %>
                     <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture">
                     <% } else { %>
-                    <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture">
+                    <img src="<%= defaultUserImg %>" alt="Default profile picture">
                     <% } %>
                   </figure>
                 </div>
@@ -67,6 +53,9 @@
                 <br />
                 <time datetime="<%= shop.createdAt.toISOString() %>"><%= shop.createdAt.toLocaleString() %></time>
               </div>
+              <button class="button is-success add-to-cart" data-item-id="<%= shop._id %>">
+                Add to Cart
+              </button>
             </div>
           </div>
         </a>
@@ -77,7 +66,20 @@
 </div>
 </div>
 
+<%-include('../partials/cart.ejs')%>
+
 <style>
+  .hero.is-medium {
+    background-image: url('images/shopPropelr.avif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .media-left .image img {
+    border-radius: 50%;
+  }
+
   .card-image img {
     object-fit: cover;
     width: 100%;
@@ -123,19 +125,41 @@
       button.addEventListener('click', (e) => {
         e.preventDefault();
 
-        const subdepartment = button.nextElementSibling; // Get the corresponding subdepartment
-        const arrow = button.querySelector('.arrow'); // Get the arrow
+        const subdepartment = button.nextElementSibling;
+        const arrow = button.querySelector('.arrow');
 
-        subdepartment.classList.toggle('active'); // Toggle the active class
+        subdepartment.classList.toggle('active');
 
         if (subdepartment.classList.contains('active')) {
-          arrow.textContent = '▼'; // Change to expanded arrow
-        } else {
-          arrow.textContent = '▶'; // Change to collapsed arrow
+          arrow.textContent = '▼';
+          arrow.textContent = '▶';
         }
       });
     });
 
     document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', () => {
+        const itemId = button.getAttribute('data-item-id');
+        console.log('Item ID:', itemId);
+        fetch('/shop/cart/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              itemId
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.message);
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    });
   });
 </script>

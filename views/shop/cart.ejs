@@ -1,0 +1,70 @@
+<% layout('layouts/boilerplate')%>
+
+<div class="container">
+  <h1 class="title is-3 has-text-centered my-5">Your Cart</h1>
+
+  <% if (cart && cart.length > 0) { %>
+  <div class="box">
+    <table class="table is-fullwidth">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cart.forEach(item => { %>
+        <tr>
+          <td><%= item.itemName %></td>
+          <td>$<%= item.price %></td>
+          <td><%= item.quantity %></td>
+          <td>$<%= (item.price * item.quantity).toFixed(2) %></td>
+          <td>
+            <button class="button is-danger is-small remove-from-cart" data-item-id="<%= item.itemId %>">
+              Remove
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="columns is-mobile is-centered">
+      <div class="column is-half">
+        <h3 class="title is-4">Total: $<%= cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2) %></h3>
+        <button class="button is-primary is-fullwidth checkout-button">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="notification is-info">
+    Your cart is empty.
+  </div>
+  <% } %>
+</div>
+
+<script>
+  document.querySelectorAll('.remove-from-cart').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const itemId = e.target.getAttribute('data-item-id');
+      fetch('/cart/remove', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            itemId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message); // Show success message
+          location.reload(); // Reload the page to update the cart
+        })
+        .catch(err => console.error('Error:', err));
+    });
+  });
+</script>

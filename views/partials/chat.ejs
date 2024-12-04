@@ -1,7 +1,10 @@
+<% if(currentUser) {%>
+
 <section class="section">
   <div id="chat-container" class="container box" style="max-width: 450px; margin: 0 auto; position: fixed; bottom: 0; right: 0px; z-index: 999; transition: all 0.3s ease;">
-    <div id="chat-header" class="notification is-primary" style="padding: 10px; cursor: pointer;">
+    <div id="chat-header" class="notification is-primary" style="padding: 10px; cursor: pointer; position: relative;">
       Chat
+      <div id="newMessageIndicator" style="position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; background-color: green; display: none;"></div>
     </div>
     <div id="chat-window" style="display: none; opacity: 0; height: 0; overflow: hidden;">
       <div id="messages" class="" style="height: 250px; overflow-y: scroll; padding: 10px;">
@@ -18,13 +21,13 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-
   <script>
     const userName = '<%= currentUser ? currentUser.username : "Guest" %>';
     const socket = io();
 
     document.getElementById('chat-header').addEventListener('click', () => {
       const chatWindow = document.getElementById('chat-window');
+      const indicator = document.getElementById('newMessageIndicator');
 
       if (chatWindow.style.display === 'none') {
         chatWindow.style.display = 'block';
@@ -32,10 +35,10 @@
           chatWindow.style.opacity = 1;
           chatWindow.style.height = '300px';
         }, 10);
+        indicator.style.display = 'none';
       } else {
         chatWindow.style.opacity = 0;
         chatWindow.style.height = '0';
-
         setTimeout(() => {
           chatWindow.style.display = 'none';
         }, 300);
@@ -60,6 +63,13 @@
       messageDiv.innerHTML = `<strong>${data.userName}:</strong> <p>${data.message}</p>`;
       messagesContainer.appendChild(messageDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      const chatWindow = document.getElementById('chat-window');
+      if (chatWindow.style.display === 'none') {
+        const indicator = document.getElementById('newMessageIndicator');
+        indicator.style.display = 'block';
+      }
     });
   </script>
 </section>
+<% } %>

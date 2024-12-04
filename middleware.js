@@ -34,3 +34,10 @@ module.exports.isAdmin = (req, res, next) => {
     }
     res.status(403).send('Access denied.');
 };
+
+module.exports.storeReturnTo = (req, res, next) => {
+    if (!req.isAuthenticated() && req.method === 'GET' && !['/login', '/signup', '/'].includes(req.originalUrl)) {
+        req.session.returnTo = req.originalUrl;
+    }
+    next();
+};

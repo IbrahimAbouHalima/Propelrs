@@ -1,0 +1,47 @@
+<button class="button is-info" id="openCartBtn">Open Cart</button>
+
+<div id="cartModal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <h2 class="title">Your Cart</h2>
+      <% if (cart && cart.length > 0) { %>
+      <ul>
+        <% cart.forEach(item => { %>
+        <li>
+          <h4><%= item.itemName %> - $<%= item.price %> x <%= item.quantity %></h4>
+        </li>
+        <% }) %>
+      </ul>
+      <% } else { %>
+      <p>Your cart is empty.</p>
+      <% } %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close" id="closeCartBtn"></button>
+</div>
+
+<script>
+  const openCartBtn = document.getElementById('openCartBtn');
+  const closeCartBtn = document.getElementById('closeCartBtn');
+  const cartModal = document.getElementById('cartModal');
+  const modalBackground = document.querySelector('.modal-background');
+  const clearCartBtn = document.getElementById('clearCartBtn');
+
+  openCartBtn.addEventListener('click', () => {
+    cartModal.classList.add('is-active');
+  });
+  closeCartBtn.addEventListener('click', () => {
+    cartModal.classList.remove('is-active');
+  });
+  modalBackground.addEventListener('click', () => {
+    cartModal.classList.remove('is-active');
+  });
+  clearCartBtn.addEventListener('click', async () => {
+    await fetch('/cart/clear', {
+      method: 'POST'
+    });
+    cartModal.classList.remove('is-active');
+    window.location.reload();
+  });
+</script>

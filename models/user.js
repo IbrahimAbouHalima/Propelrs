@@ -7,8 +7,6 @@ const ImageSchema = new Schema({
     filename: String
 })
 
-
-
 const UserSchema = new Schema({
     profilePicture: [ImageSchema],
     email: {
@@ -22,6 +20,9 @@ const UserSchema = new Schema({
         enum: ['user', 'business', 'admin'],
         default: 'user'
     },
+    address: {
+        type: String
+    }
 });
 
 UserSchema.plugin(passportLocalMongoose);

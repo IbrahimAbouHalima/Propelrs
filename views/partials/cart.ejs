@@ -6,16 +6,28 @@
     <div class="box">
       <h2 class="title">Your Cart</h2>
       <% if (cart && cart.length > 0) { %>
-      <ul>
-        <% cart.forEach(item => { %>
-        <li>
-          <h4><%= item.itemName %> - $<%= item.price %> x <%= item.quantity %></h4>
+      <ul class="cart-list">
+        <% cart.forEach((item, index) => { %>
+        <li class="cart-item media">
+          <div class="media-content">
+            <p class="title is-5"><%= item.name %></p>
+            <p>KWD <%= item.price %> x <%= item.quantity %></p>
+          </div>
+          <div class="media-right">
+            <button class="button is-danger is-small remove-item-btn" data-index="<%= index %>">
+              Remove
+            </button>
+          </div>
         </li>
         <% }) %>
       </ul>
       <% } else { %>
       <p>Your cart is empty.</p>
       <% } %>
+      <div class="buttons">
+        <button class="button is-info" id="viewFullCartBtn">View Full Cart</button>
+        <a href="/shop/checkout"><button class="button is-primary">Checkout</button></a>
+      </div>
     </div>
   </div>
   <button class="modal-close is-large" aria-label="close" id="closeCartBtn"></button>
@@ -26,22 +38,98 @@
   const closeCartBtn = document.getElementById('closeCartBtn');
   const cartModal = document.getElementById('cartModal');
   const modalBackground = document.querySelector('.modal-background');
-  const clearCartBtn = document.getElementById('clearCartBtn');
 
   openCartBtn.addEventListener('click', () => {
     cartModal.classList.add('is-active');
   });
+
   closeCartBtn.addEventListener('click', () => {
     cartModal.classList.remove('is-active');
   });
+
   modalBackground.addEventListener('click', () => {
     cartModal.classList.remove('is-active');
   });
-  clearCartBtn.addEventListener('click', async () => {
-    await fetch('/cart/clear', {
-      method: 'POST'
-    });
-    cartModal.classList.remove('is-active');
-    window.location.reload();
+
+  const viewFullCartBtn = document.getElementById('viewFullCartBtn');
+  viewFullCartBtn.addEventListener('click', () => {
+    window.location.href = '/shop/cart';
   });
+
+  document.addEventListener('click', async (event) => {
+    if (event.target.classList.contains('remove-item-btn')) {
+      const index = event.target.dataset.index;
+      const response = await fetch(`/shop/cart/remove`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          index
+        }),
+      });
+
+      if (response.ok) {
+        const cartItem = event.target.closest('.cart-item');
+        cartItem.remove();
+        const cartList = document.querySelector('.cart-list');
+        if (cartList.children.length === 0) {
+          cartList.innerHTML = '<p>Your cart is empty.</p>';
+        }
+      } else {
+        console.error('Failed to remove item from cart');
+      }
+    }
+  });
+
+  document.addEventListener('click', async (event) => {
+    if (event.target.classList.contains('add-to-cart-btn')) {
+      const itemId = event.target.dataset.itemId;
+
+      const response = await fetch(`/shop/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemId
+        }),
+      });
+
+      if (response.ok) {
+        const updatedCart = await response.json();
+
+        const emptyMessage = document.querySelector('.cart-list + p');
+        if (emptyMessage) emptyMessage.remove();
+
+        const newItemIndex = updatedCart.length - 1;
+        renderCartItem(updatedCart[newItemIndex], newItemIndex);
+      } else {
+        console.error('Failed to add item to cart');
+      }
+    }
+  });
+
+  function renderCartItem(item, index) {
+    const cartList = document.querySelector('.cart-list');
+    const cartItem = document.createElement('li');
+    cartItem.className = 'cart-item media';
+    cartItem.innerHTML = `
+      <figure class="media-left">
+        <p class="image is-64x64">
+          <img src="${item.iconUrl}" alt="${item.name}">
+        </p>
+      </figure>
+      <div class="media-content">
+        <p class="title is-5">${item.name}</p>
+        <p>$${item.price} x ${item.quantity}</p>
+      </div>
+      <div class="media-right">
+        <button class="button is-danger is-small remove-item-btn" data-index="${index}">
+          Remove
+        </button>
+      </div>
+    `;
+    cartList.appendChild(cartItem);
+  }
 </script>

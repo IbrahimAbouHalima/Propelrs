@@ -7,10 +7,13 @@
     <% if(currentUser && currentUser.accountType === 'business'){ %>
     <a href="/shop/newItem"><button class="button"> add item</button></a>
     <% } %>
+    <%-include('../partials/cart.ejs')%>
+
   </div>
 </section>
 
 <div class="columns mx-3 my-3">
+
   <%- include('../partials/shopCategory.ejs') %>
 
   <div class="column mx-4">
@@ -66,7 +69,6 @@
 </div>
 </div>
 
-<%-include('../partials/cart.ejs')%>
 
 <style>
   .hero.is-medium {

@@ -11,6 +11,8 @@ const upload = multer({ storage });
 
 router.use(storeReturnTo);
 
+const defaultUserImg = 'https://res.cloudinary.com/djp8iklzi/image/upload/v1733059211/Propelrs/stmqni1huylwmtrivcks.jpg';
+
 router.get('/login', (req, res) => {
     res.render('users/login.ejs')
 
@@ -41,6 +43,13 @@ router.post('/signup', upload.single('profilePicture'), async (req, res, next) =
                 url: req.file.path,
                 filename: req.file.filename
             }];
+        } else {
+            user.profilePicture = [
+                {
+                    url: defaultUserImg,
+                    filename: 'default'
+                }
+            ];
         }
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, (err) => {
@@ -84,13 +93,18 @@ router.post('/profile', requireLogin, upload.single('profilePicture'), async (re
             req.flash('error', 'User not found');
             return res.redirect('/profile');
         }
-        const profilePicture = {
-            url: req.file.path,
-            filename: req.file.filename,
-        };
-        user.profilePicture = [profilePicture];
+        if (req.file) {
+            const profilePicture = {
+                url: req.file.path,
+                filename: req.file.filename,
+            };
+            user.profilePicture = [profilePicture];
+        }
+        if (req.body.address) {
+            user.address = req.body.address.trim();
+        }
         await user.save();
-        req.flash('success', 'Profile picture updated successfully!');
+        req.flash('success', 'Profile updated successfully!');
         res.redirect('/profile');
     } catch (err) {
         console.error(err);

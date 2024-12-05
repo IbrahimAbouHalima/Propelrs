@@ -1,5 +1,5 @@
 require('dotenv').config();
-const express = require('express');
+const express = require('express'); //the following are the imported technologies required to run the code
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const path = require('path');
@@ -82,31 +82,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(passport.initialize());
+app.use(passport.initialize()); //passport is used for storing users details and hashing the password
 app.use(passport.session());
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        if (req.url.startsWith('/feed')) {
-            cb(null, './public/feedImages');
-        } else if (req.url.startsWith('/shop')) {
-            cb(null, './public/shopImages');
-        } else {
-            cb(new Error('Invalid route'), './public/defaultImages');
-        }
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-
-const upload = multer({ storage: storage });
 
 app.use((req, res, next) => {
     res.locals.defaultUserImg = 'https://res.cloudinary.com/djp8iklzi/image/upload/v1733059211/Propelrs/stmqni1huylwmtrivcks.jpg';
@@ -118,10 +100,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use((req, res, next) => {
-    console.log(`Request received: ${req.method} ${req.url}`);
-    next();
-});
 
 app.use('/', userRoutes);
 app.use('/feed', feedRoutes);

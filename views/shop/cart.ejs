@@ -1,4 +1,4 @@
-<% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate') %>
 
 <div class="container">
   <h1 class="title is-3 has-text-centered my-5">Your Cart</h1>
@@ -15,15 +15,15 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <% cart.forEach(item => { %>
-        <tr>
-          <td><%= item.itemName %></td>
-          <td>$<%= item.price %></td>
+      <tbody class="cart-list">
+        <% cart.forEach((item, index) => { %>
+        <tr data-item-id="<%= item.itemId %>">
+          <td><%= item.name %></td>
+          <td>KWD <%= item.price %></td>
           <td><%= item.quantity %></td>
-          <td>$<%= (item.price * item.quantity).toFixed(2) %></td>
+          <td>KWD <%= (item.price * item.quantity).toFixed(2) %></td>
           <td>
-            <button class="button is-danger is-small remove-from-cart" data-item-id="<%= item.itemId %>">
+            <button class="button is-danger is-small remove-from-cart" data-index="<%= index %>">
               Remove
             </button>
           </td>
@@ -34,8 +34,8 @@
 
     <div class="columns is-mobile is-centered">
       <div class="column is-half">
-        <h3 class="title is-4">Total: $<%= cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2) %></h3>
-        <button class="button is-primary is-fullwidth checkout-button">Proceed to Checkout</button>
+        <h3 class="title is-4">Total: KWD <%= cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2) %></h3>
+        <button class="button is-primary is-medium checkout-button">Proceed to Checkout</button>
       </div>
     </div>
   </div>
@@ -47,24 +47,41 @@
 </div>
 
 <script>
-  document.querySelectorAll('.remove-from-cart').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const itemId = e.target.getAttribute('data-item-id');
-      fetch('/cart/remove', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            itemId
-          })
+  document.addEventListener('click', async (event) => {
+    if (event.target.classList.contains('remove-from-cart')) {
+      const index = event.target.getAttribute('data-index'); // Get the index of the item to be removed
+
+      const response = await fetch('/shop/cart/remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          index
         })
-        .then(response => response.json())
-        .then(data => {
-          alert(data.message); // Show success message
-          location.reload(); // Reload the page to update the cart
-        })
-        .catch(err => console.error('Error:', err));
-    });
+      });
+
+      if (response.ok) {
+        const rowToRemove = event.target.closest('tr');
+        rowToRemove.remove();
+        updateTotal();
+      } else {
+        alert('Failed to remove item from cart');
+      }
+    }
+  });
+
+  function updateTotal() {
+    const cartRows = document.querySelectorAll('.cart-list tr');
+    const total = Array.from(cartRows).reduce((acc, row) => {
+      const price = parseFloat(row.cells[1].innerText.replace('$', ''));
+      const quantity = parseInt(row.cells[2].innerText);
+      return acc + (price * quantity);
+    }, 0);
+    document.querySelector('.title.is-4').innerText = `Total: $${total.toFixed(2)}`;
+  }
+
+  document.querySelector('.checkout-button').addEventListener('click', () => {
+    window.location.href = '/shop/checkout';
   });
 </script>

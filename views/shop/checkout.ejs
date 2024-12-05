@@ -1,0 +1,42 @@
+<% layout('layouts/boilerplate') %>
+<section class="section">
+  <div class="container">
+    <h1 class="title">Checkout</h1>
+
+    <div class="box">
+      <h2 class="subtitle">Your Cart</h2>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+
+      </table>
+    </div>
+
+
+
+    <div class="box">
+      <h2 class="subtitle">Payment Method</h2>
+      <div class="field">
+        <label class="label">Select Payment Method</label>
+        <div class="control">
+          <div class="select">
+            <select id="payment-method">
+              <option value="cash">Cash</option>
+              <option value="credit-card">Credit Card</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <button class="button is-primary">Proceed to Payment</button>
+      </div>
+    </div>
+  </div>
+</section>

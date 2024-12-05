@@ -31,7 +31,9 @@
         <p class="subtitle">Price: $<%= shop.price %></p>
         <p><strong>Description:</strong> <%= shop.description %></p>
         <p><strong>Tags:</strong> <%= shop.tags.join(", ") %></p>
-
+        <button class="button is-success add-to-cart m-3" data-item-id="<%= shop._id %>">
+          Add to Cart
+        </button>
         <h2 class="title is-4">Reviews</h2>
         <% if (shop.reviews.length > 0) { %>
         <div class="reviews">
@@ -69,6 +71,7 @@
               </div>
               <time datetime="2021-01-01">11:09 PM - 1 Jan 2021</time>
               <hr>
+
             </li>
             <% }); %>
           </ul>
@@ -104,153 +107,166 @@
     </div>
     <a href="/shop" class="button is-link">Back to Shop</a>
   </div>
+</div>
+<%-include('../partials/cart.ejs')%>
 
-  <style>
-    .card-image img {
-      object-fit: cover;
-      width: 100%;
-      height: 100%;
-    }
+<style>
+  .card-image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
 
-    .toggle-button {
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-    }
+  .toggle-button {
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
 
-    .arrow {
-      margin-right: 10px;
-      display: inline-block;
-      transition: transform 0.3s ease;
-    }
+  .arrow {
+    margin-right: 10px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
 
-    .subdepartment {
-      margin-left: 20px;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.5s ease, opacity 0.5s ease;
-    }
+  .subdepartment {
+    margin-left: 20px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+  }
 
-    .subdepartment.active {
-      max-height: 500px;
-      opacity: 1;
-    }
+  .subdepartment.active {
+    max-height: 500px;
+    opacity: 1;
+  }
 
-    .expanded .arrow {
-      transform: rotate(90deg);
-    }
+  .expanded .arrow {
+    transform: rotate(90deg);
+  }
 
-    /* Circular profile pictures */
-    .profilePicture {
-      border-radius: 50%;
-      object-fit: cover;
-      width: 48px;
-      height: 48px;
-      display: block;
-    }
+  .profilePicture {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
 
-    .star-rating {
-      display: inline-block;
-      font-size: 2rem;
-      color: #ccc;
-      cursor: pointer;
-    }
+  .star-rating {
+    display: inline-block;
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+  }
 
-    .star-rating .star {
-      margin-right: 5px;
-      transition: color 0.3s;
-    }
+  .star-rating .star {
+    margin-right: 5px;
+    transition: color 0.3s;
+  }
 
-    .star-rating .star.selected,
-    .star-rating .star:hover {
-      color: gold;
-    }
+  .star-rating .star.selected,
+  .star-rating .star:hover {
+    color: gold;
+  }
 
-    .star-rating .star:hover~.star {
-      color: #ccc;
-    }
+  .star-rating .star:hover~.star {
+    color: #ccc;
+  }
 
-    #rating-input {
-      display: none;
-      /* Hide the input field */
-    }
-  </style>
+  #rating-input {
+    display: none;
+  }
+</style>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleButtons = document.querySelectorAll('.toggle-button');
 
+    toggleButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const toggleButtons = document.querySelectorAll('.toggle-button');
+        const subdepartment = button.nextElementSibling;
+        const arrow = button.querySelector('.arrow');
 
-      toggleButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
+        subdepartment.classList.toggle('active');
 
-          const subdepartment = button.nextElementSibling; // Get the corresponding subdepartment
-          const arrow = button.querySelector('.arrow'); // Get the arrow
-
-          subdepartment.classList.toggle('active'); // Toggle the active class
-
-          if (subdepartment.classList.contains('active')) {
-            arrow.textContent = '▼'; // Change to expanded arrow
-          } else {
-            arrow.textContent = '▶'; // Change to collapsed arrow
-          }
-        });
+        if (subdepartment.classList.contains('active')) {
+          arrow.textContent = '▼';
+        } else {
+          arrow.textContent = '▶';
+        }
       });
-
-      document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const stars = document.querySelectorAll('.star');
-      const ratingInput = document.getElementById('rating-input');
+    document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
+  });
 
-      // Handle click on a star
+  document.addEventListener('DOMContentLoaded', () => {
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-input');
+
+    stars.forEach(star => {
+      star.addEventListener('click', (e) => {
+        const value = e.target.getAttribute('data-value');
+        ratingInput.value = value;
+        updateStars(value);
+      });
+
+      star.addEventListener('mouseover', (e) => {
+        const value = e.target.getAttribute('data-value');
+        updateStars(value, true);
+      });
+
+      star.addEventListener('mouseout', () => {
+        const currentRating = ratingInput.value;
+        updateStars(currentRating);
+      });
+    });
+
+    function updateStars(value, isHover = false) {
       stars.forEach(star => {
-        star.addEventListener('click', (e) => {
-          const value = e.target.getAttribute('data-value');
-          ratingInput.value = value; // Set the value to the hidden input
-          updateStars(value);
-        });
-
-        // Handle hover effect
-        star.addEventListener('mouseover', (e) => {
-          const value = e.target.getAttribute('data-value');
-          updateStars(value, true);
-        });
-
-        // Remove hover effect when mouse leaves
-        star.addEventListener('mouseout', () => {
-          const currentRating = ratingInput.value;
-          updateStars(currentRating);
-        });
-      });
-
-      // Function to update the star colors based on the current rating
-      function updateStars(value, isHover = false) {
-        stars.forEach(star => {
-          const starValue = star.getAttribute('data-value');
-          if (isHover) {
-            // Highlight stars up to the hovered one
-            if (starValue <= value) {
-              star.classList.add('selected');
-            } else {
-              star.classList.remove('selected');
-            }
+        const starValue = star.getAttribute('data-value');
+        if (isHover) {
+          if (starValue <= value) {
+            star.classList.add('selected');
           } else {
-            // Highlight stars based on the current rating
-            if (starValue <= value) {
-              star.classList.add('selected');
-            } else {
-              star.classList.remove('selected');
-            }
+            star.classList.remove('selected');
           }
-        });
-      }
-    });
-  </script>
+        } else {
+          if (starValue <= value) {
+            star.classList.add('selected');
+          } else {
+            star.classList.remove('selected');
+          }
+        }
+      });
+    }
+  });
 
-  <%- include('../partials/cart')%>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', () => {
+        const itemId = button.getAttribute('data-item-id');
+        console.log('Item ID:', itemId);
+        fetch('/shop/cart/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              itemId
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.message);
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    });
+  });
+</script>

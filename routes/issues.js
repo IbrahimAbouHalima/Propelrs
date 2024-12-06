@@ -5,7 +5,7 @@ const { isAdmin } = require('../middleware');
 
 router.get('/report', (req, res) => {
     if (!req.user) return res.redirect('/login');
-    res.render('issues/reportIssue.ejs');
+    res.render('issues/reportIssue');
 });
 
 router.post('/report', async (req, res) => {
@@ -30,7 +30,7 @@ router.post('/report', async (req, res) => {
 router.get('/', isAdmin, async (req, res) => {
     if (!req.user) return res.redirect('/login');
     const issues = await Issue.find({}).populate('reportedBy', 'username');
-    res.render('issues/listedIssues.ejs', { issues });
+    res.render('issues/listedIssues', { issues });
 });
 
 module.exports = router;

@@ -1,15 +1,15 @@
 <% layout('layouts/boilerplate')%>
+
 <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
   <ul>
     <li><a href="/shop">Shop</a></li>
-    <li><a href="/shop/<%= shop.department%>/<%=shop.category%>"><%=shop.category%></a></li>
-    <li><a href="/shop/<%= shop.department%>/<%=shop.category%>/<%=shop.itemName %>"><%= shop.itemName %></a></li>
+    <li><a href="/shop/<%= shop.department %>/<%= shop.category %>"><%= shop.category %></a></li>
+    <li><a href="/shop/<%= shop.department %>/<%= shop.category %>/<%= shop.itemName %>"><%= shop.itemName %></a></li>
   </ul>
 </nav>
+
 <div class="columns mx-3 my-3">
-
-  <%- include('../partials/shopCategory.ejs')%>
-
+  <%- include('../partials/shopCategory.ejs') %>
   <div class="container is-max-tablet">
     <div class="card">
       <div class="card-image">
@@ -18,87 +18,77 @@
         </figure>
       </div>
       <div class="card-content">
-        <div class="media-left">
-          <figure class="image is-48x48">
-            <% if (shop.uploadedUser.profilePicture.length > 0) { %>
-            <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
-            <% } else { %>
-            <img src="<%= defaultUserImg %>" alt="Default profile picture" class="profilePicture">
-            <% } %>
-          </figure>
-        </div>
+        <figure class="image is-48x48">
+          <img src="<%= shop.uploadedUser.profilePicture.length ? shop.uploadedUser.profilePicture[0].url : defaultUserImg %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
+        </figure>
         <h1 class="title"><%= shop.itemName %></h1>
         <p class="subtitle">Price: $<%= shop.price %></p>
         <p><strong>Description:</strong> <%= shop.description %></p>
         <p><strong>Tags:</strong> <%= shop.tags.join(", ") %></p>
-        <button class="button is-success add-to-cart m-3" data-item-id="<%= shop._id %>">
-          Add to Cart
-        </button>
-        <h2 class="title is-4">Reviews</h2>
-        <% if (shop.reviews.length > 0) { %>
-        <div class="reviews">
-          <ul>
-            <% shop.reviews.forEach(review => { %>
-            <li class="">
-              <div class="media">
-                <div class="media-left">
-                  <figure class="profilePicture">
-                    <% if (review.uploadedUser.profilePicture && review.uploadedUser.profilePicture.length > 0) { %>
-                    <img src="<%= review.uploadedUser.profilePicture[0].url %>" alt="<%= review.uploadedUser.username %>'s profile picture" class="profilePicture">
-                    <% } else { %>
-                    <img src="https://bulma.io/assets/images/placeholders/96x96.png" alt="Default profile picture" class="profilePicture">
-                    <% } %>
-                  </figure>
-                </div>
-                <div class="media-content">
-                  <p class="title is-5"><%= review.uploadedUser.username %></p>
-                  <p class="subtitle is-6">
-                    <% 
-                    let stars = ''; 
-                    const rating = review.rating;
-                    for (let i = 0; i < 5; i++) {
-                        if (i < rating) {
-                            stars += '⭐';
-                        } else {
-                            stars += '☆';
-                        }
-                    }
-                    %>
-                    <%= stars %> <%= review.rating %> Stars
-                  </p>
-                  <div class="content"><%= review.body %></div>
-                </div>
-              </div>
-              <time datetime="2021-01-01">11:09 PM - 1 Jan 2021</time>
-              <hr>
 
-            </li>
-            <% }); %>
-          </ul>
+        <div>
+          <h3 class="title is-5">Average Rating</h3>
+          <% 
+            const ratingCount = shop.reviews.length; 
+            const averageRating = ratingCount > 0 
+              ? shop.reviews.reduce((sum, review) => sum + review.rating, 0) / ratingCount 
+              : 0;
+            const fullStars = Math.floor(averageRating);
+            const halfStar = averageRating % 1 >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+          %>
+          <% for (let i = 0; i < fullStars; i++) { %>
+          <span>⭐</span>
+          <% } %>
+          <% if (halfStar) { %>
+          <span>⭐</span>
+          <% } %>
+          <% for (let i = 0; i < emptyStars; i++) { %>
+          <span>☆</span>
+          <% } %>
+          (<%= ratingCount %> ratings)
         </div>
+        <button class="button is-success add-to-cart m-3" data-item-id="<%= shop._id %>">Add to Cart</button>
+
+        <h2 class="title is-4">Reviews</h2>
+        <% if (shop.reviews.length) { %>
+        <ul class="reviews">
+          <% shop.reviews.forEach(({ uploadedUser, rating, body }) => { %>
+          <li>
+            <div class="media">
+              <figure class="profilePicture">
+                <img src="<%= uploadedUser.profilePicture.length ? uploadedUser.profilePicture[0].url : defaultUserImg %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
+              </figure>
+              <div class="media-content">
+                <p class="title is-5"><%= uploadedUser.username %></p>
+                <p class="subtitle is-6"><%= '⭐'.repeat(rating) + '☆'.repeat(5 - rating) %> <%= rating %> Stars</p>
+                <div class="content"><%= body %></div>
+              </div>
+            </div>
+          </li>
+          <% }); %>
+        </ul>
         <% } else { %>
         <p>No reviews yet.</p>
         <% } %>
 
+
+
         <div class="review-form">
           <h3 class="title is-5">Add a Review</h3>
-          <form action="/shop/<%=shop._id%>/reviews" method="POST">
+          <form action="/shop/<%= shop._id %>/reviews" method="POST">
             <div class="field">
               <label class="label">Rating</label>
               <div class="star-rating" id="star-rating">
-                <span class="star" data-value="1">&#9733;</span>
-                <span class="star" data-value="2">&#9733;</span>
-                <span class="star" data-value="3">&#9733;</span>
-                <span class="star" data-value="4">&#9733;</span>
-                <span class="star" data-value="5">&#9733;</span>
+                <% for (let i = 1; i <= 5; i++) { %>
+                <span class="star" data-value="<%= i %>">&#9733;</span>
+                <% } %>
               </div>
               <input type="hidden" name="review[rating]" id="rating-input" required />
             </div>
             <div class="field">
               <label class="label">Review Description</label>
-              <div class="control">
-                <textarea class="textarea" name="review[body]" placeholder="Write your review here" required></textarea>
-              </div>
+              <textarea class="textarea" name="review[body]" placeholder="Write your review here" required></textarea>
             </div>
             <button type="submit" class="button is-primary">Submit Review</button>
           </form>
@@ -108,51 +98,15 @@
     <a href="/shop" class="button is-link">Back to Shop</a>
   </div>
 </div>
-<%-include('../partials/cart.ejs')%>
+
+<%- include('../partials/cart.ejs') %>
 
 <style>
-  .card-image img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-  }
-
-  .toggle-button {
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-
-  .arrow {
-    margin-right: 10px;
-    display: inline-block;
-    transition: transform 0.3s ease;
-  }
-
-  .subdepartment {
-    margin-left: 20px;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.5s ease, opacity 0.5s ease;
-  }
-
-  .subdepartment.active {
-    max-height: 500px;
-    opacity: 1;
-  }
-
-  .expanded .arrow {
-    transform: rotate(90deg);
-  }
-
   .profilePicture {
     border-radius: 50%;
-    object-fit: cover;
     width: 48px;
     height: 48px;
-    display: block;
+    object-fit: cover;
   }
 
   .star-rating {
@@ -162,111 +116,37 @@
     cursor: pointer;
   }
 
-  .star-rating .star {
-    margin-right: 5px;
-    transition: color 0.3s;
-  }
-
-  .star-rating .star.selected,
-  .star-rating .star:hover {
+  .star-rating .star.selected {
     color: gold;
-  }
-
-  .star-rating .star:hover~.star {
-    color: #ccc;
-  }
-
-  #rating-input {
-    display: none;
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const toggleButtons = document.querySelectorAll('.toggle-button');
-
-    toggleButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        const subdepartment = button.nextElementSibling;
-        const arrow = button.querySelector('.arrow');
-
-        subdepartment.classList.toggle('active');
-
-        if (subdepartment.classList.contains('active')) {
-          arrow.textContent = '▼';
-        } else {
-          arrow.textContent = '▶';
-        }
-      });
-    });
-
-    document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
     const stars = document.querySelectorAll('.star');
     const ratingInput = document.getElementById('rating-input');
-
     stars.forEach(star => {
-      star.addEventListener('click', (e) => {
-        const value = e.target.getAttribute('data-value');
-        ratingInput.value = value;
-        updateStars(value);
-      });
-
-      star.addEventListener('mouseover', (e) => {
-        const value = e.target.getAttribute('data-value');
-        updateStars(value, true);
-      });
-
-      star.addEventListener('mouseout', () => {
-        const currentRating = ratingInput.value;
-        updateStars(currentRating);
+      star.addEventListener('click', () => {
+        ratingInput.value = star.dataset.value;
+        updateStars(ratingInput.value);
       });
     });
-
-    function updateStars(value, isHover = false) {
-      stars.forEach(star => {
-        const starValue = star.getAttribute('data-value');
-        if (isHover) {
-          if (starValue <= value) {
-            star.classList.add('selected');
-          } else {
-            star.classList.remove('selected');
-          }
-        } else {
-          if (starValue <= value) {
-            star.classList.add('selected');
-          } else {
-            star.classList.remove('selected');
-          }
-        }
-      });
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
+    const updateStars = value => {
+      stars.forEach(star => star.classList.toggle('selected', star.dataset.value <= value));
+    };
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
-        const itemId = button.getAttribute('data-item-id');
-        console.log('Item ID:', itemId);
+        const itemId = button.dataset.itemId;
         fetch('/shop/cart/add', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              itemId
-            }),
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data.message);
-          })
-          .catch(error => console.error('Error:', error));
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            itemId
+          }),
+        }).then(response => response.json()).then(console.log).catch(console.error);
       });
-    });
+    })
   });
 </script>

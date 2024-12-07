@@ -1,58 +1,71 @@
-<% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate') %>
 
 <section class="hero is-medium is-primary">
   <div class="hero-body">
     <p class="title">Shop</p>
     <p class="subtitle">Find any service from local stores</p>
-    <% if(currentUser && currentUser.accountType === 'business'){ %>
-    <a href="/shop/newItem"><button class="button"> add item</button></a>
+    <% if (currentUser?.accountType === 'business') { %>
+    <a href="/shop/newItem"><button class="button">Add Item</button></a>
     <% } %>
-    <%-include('../partials/cart.ejs')%>
-
+    <%- include('../partials/cart.ejs') %>
   </div>
 </section>
 
 <div class="columns mx-3 my-3">
-
   <%- include('../partials/shopCategory.ejs') %>
-
   <div class="column mx-4">
     <div class="columns is-multiline">
-      <% for (let shop of shops) { %>
+      <% shops.forEach(shop => { %>
       <div class="column is-2">
         <a href="shop/<%= shop._id %>">
+          <!-- This is where each item starts-->
           <div class="card">
             <div class="card-image">
               <figure class="image is-4by3">
-                <% if (shop.images.length > 0) { %>
-                <img src="<%= shop.images[0].url %>">
-                <% } else { %>
-                <img src="https://bulma.io/assets/images/placeholders/1280x960.png" />
-                <% } %>
+                <img src="<%= shop.images?.[0]?.url || 'https://bulma.io/assets/images/placeholders/1280x960.png' %>">
               </figure>
             </div>
             <div class="card-content">
               <div class="media">
                 <div class="media-left">
                   <figure class="image is-48x48">
-                    <% if (shop.uploadedUser.profilePicture.length > 0) { %>
-                    <img src="<%= shop.uploadedUser.profilePicture[0].url %>" alt="<%= shop.uploadedUser.username %>'s profile picture">
-                    <% } else { %>
-                    <img src="<%= defaultUserImg %>" alt="Default profile picture">
-                    <% } %>
+                    <img src="<%= shop.uploadedUser?.profilePicture?.[0]?.url || defaultUserImg %>" alt="<%= shop.uploadedUser?.username || 'Default' %>'s profile picture">
                   </figure>
                 </div>
                 <div class="media-content">
-                  <p class="title is-4"><%= shop.itemName %> </p>
-                  <p class="title is-4"> <%= shop.uploadedUser.name %></p>
-                  <p class="subtitle is-6"><%= shop.uploadedUser.username %></p>
-                  <p class="subtitle is-4"> KD <%= shop.price %></p>
+                  <p class="title is-4"><%= shop.itemName %></p>
+                  <p class="title is-4"><%= shop.uploadedUser?.name %></p>
+                  <p class="subtitle is-6"><%= shop.uploadedUser?.username %></p>
+                  <p class="subtitle is-4">KD <%= shop.price %></p>
                 </div>
               </div>
-
               <div class="content">
                 <%= shop.description %>
-                <a href="#"><%= shop.tags %></a>
+                <div>
+                  <h3 class="title is-5 mb-0 mt-1">Average Rating</h3>
+                  <% 
+                    const ratingCount = shop.reviews.length; 
+                    const averageRating = ratingCount > 0 
+                      ? shop.reviews.reduce((sum, review) => sum + review.rating, 0) / ratingCount 
+                      : 0;
+                    const fullStars = Math.floor(averageRating);
+                    const halfStar = averageRating % 1 >= 0.5 ? 1 : 0;
+                    const emptyStars = 5 - fullStars - halfStar;
+                  %>
+                  <% for (let i = 0; i < fullStars; i++) { %>
+                  <span>⭐</span>
+                  <% } %>
+                  <% if (halfStar) { %>
+                  <span>⭐</span>
+                  <% } %>
+                  <% for (let i = 0; i < emptyStars; i++) { %>
+                  <span>☆</span>
+                  <% } %>
+                  <%= ratingCount %> ratings
+                </div>
+                <a href="#">
+                  <div class="mt-2"><%= shop.tags %></div>
+                </a>
                 <br />
                 <time datetime="<%= shop.createdAt.toISOString() %>"><%= shop.createdAt.toLocaleString() %></time>
               </div>
@@ -63,12 +76,10 @@
           </div>
         </a>
       </div>
-      <% } %>
+      <% }); %>
     </div>
   </div>
 </div>
-</div>
-
 
 <style>
   .hero.is-medium {
@@ -88,79 +99,29 @@
     height: 100%;
   }
 
-  .toggle-button {
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-
-  .arrow {
-    margin-right: 10px;
-    display: inline-block;
-    transition: transform 0.3s ease;
-  }
-
-  .subdepartment {
-    margin-left: 20px;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.5s ease, opacity 0.5s ease;
-  }
-
-  .subdepartment.active {
-    max-height: 500px;
-    opacity: 1;
-  }
-
-  .expanded .arrow {
-    transform: rotate(90deg);
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const toggleButtons = document.querySelectorAll('.toggle-button');
-
-    toggleButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-
-        const subdepartment = button.nextElementSibling;
-        const arrow = button.querySelector('.arrow');
-
-        subdepartment.classList.toggle('active');
-
-        if (subdepartment.classList.contains('active')) {
-          arrow.textContent = '▼';
-          arrow.textContent = '▶';
-        }
-      });
-    });
-
-    document.querySelectorAll('.subdepartment').forEach(ul => ul.classList.remove('active'));
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
-        const itemId = button.getAttribute('data-item-id');
-        console.log('Item ID:', itemId);
+        const itemId = button.dataset.itemId;
         fetch('/shop/cart/add', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({
               itemId
             }),
           })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data.message);
-          })
-          .catch(error => console.error('Error:', error));
+          .then(res => res.json())
+          .then(data => console.log(data.message))
+          .catch(err => console.error('Error:', err));
       });
     });
   });

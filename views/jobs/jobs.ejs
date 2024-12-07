@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 <div class="container is-max-tablet">
-  <% if (currentUser) { %>
+  <% if(currentUser && currentUser.accountType === 'business'){ %>
   <a class="button" href="/jobs/addjob">Add a job</a>
   <% } else { %>
   <p>You miss all the shots you don't take.</p>

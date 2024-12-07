@@ -130,3 +130,49 @@
     </ul>
   </aside>
 </div>
+
+<style>
+  .toggle-button {
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .arrow {
+    margin-right: 10px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .subdepartment {
+    margin-left: 20px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+  }
+
+  .subdepartment.active {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .expanded .arrow {
+    transform: rotate(90deg);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.toggle-button').forEach(button => {
+      button.addEventListener('click', e => {
+        e.preventDefault();
+        const subdepartment = button.nextElementSibling;
+        const arrow = button.querySelector('.arrow');
+        subdepartment.classList.toggle('active');
+        arrow.textContent = subdepartment.classList.contains('active') ? '▼' : '▶';
+      });
+    });
+  });
+</script>

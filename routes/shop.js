@@ -9,21 +9,29 @@ const upload = multer({ storage })
 
 router.get('/', async (req, res) => {
     try {
-        const { category } = req.query;
-        let filter = {};
-        if (category && category !== 'all') {
-            filter = { category };
-        }
-        const shops = await Shop.find(filter).populate('uploadedUser');
-        res.render('./shop/shop.ejs', {
-            shops, selectedCategory: category || 'all', cart: req.session.cart || []
+        const category = req.query.category || 'all';
+
+        const shops = await Shop.find({ category: category === 'all' ? { $exists: true } : category })
+            .populate('uploadedUser reviews');
+        shops.forEach(shop => {
+            if (shop.reviews.length > 0) {
+                const totalRating = shop.reviews.reduce((sum, review) => sum + review.rating, 0);
+                shop.averageRating = (totalRating / shop.reviews.length).toFixed(1);
+            } else {
+                shop.averageRating = "No ratings yet";
+            }
+        });
+        res.render('shop/shop.ejs', {
+            shops,
+            selectedCategory: category,
+            cart: req.session.cart || []
         });
     } catch (err) {
         console.error(err);
-        req.flash('error', 'Could not retrieve feed items.');
+        req.flash('error', 'Could not retrieve shops.');
         res.redirect('/');
     }
-})
+});
 
 router.post('/', requireLogin, upload.single('images'), async (req, res) => {
     try {
@@ -100,7 +108,25 @@ router.post('/cart/remove', (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    res.render('./shop/shopShow.ejs');
+    try {
+        const shop = await Shop.findById(req.params.id).populate('uploadedUser').populate({
+            path: 'reviews',
+            populate: {
+                path: 'uploadedUser',
+                model: 'User'
+            }
+        });
+
+        if (!shop) {
+            req.flash('error', 'Shop item not found.');
+            return res.redirect('/shop');
+        }
+        res.render('./shop/shopShow.ejs', { shop, cart: req.session.cart || [] });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Could not retrieve shop item.');
+        res.redirect('/shop');
+    }
 });
 
 router.post('/checkout', (req, res) => {

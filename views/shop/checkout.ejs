@@ -14,29 +14,47 @@
             <th>Total</th>
           </tr>
         </thead>
-
+        <tbody>
+          <% if (cart.length > 0) { %>
+          <% cart.forEach(item => { %>
+          <tr>
+            <td><%= item.name %></td>
+            <td>$<%= item.price.toFixed(2) %></td>
+            <td><%= item.quantity %></td>
+            <td>$<%= (item.price * item.quantity).toFixed(2) %></td>
+          </tr>
+          <% }); %>
+          <% } else { %>
+          <tr>
+            <td colspan="4" class="has-text-centered">Your cart is empty</td>
+          </tr>
+          <% } %>
+        </tbody>
       </table>
+      <h2 class="subtitle has-text-right">
+        Total: $<%= cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2) %>
+      </h2>
     </div>
-
-
 
     <div class="box">
       <h2 class="subtitle">Payment Method</h2>
-      <div class="field">
-        <label class="label">Select Payment Method</label>
-        <div class="control">
-          <div class="select">
-            <select id="payment-method">
-              <option value="cash">Cash</option>
-              <option value="credit-card">Credit Card</option>
-            </select>
+      <form action="/shop/checkout" method="POST">
+        <div class="field">
+          <label class="label">Select Payment Method</label>
+          <div class="control">
+            <div class="select">
+              <select name="paymentMethod" required>
+                <option value="cash">Cash</option>
+                <option value="credit-card">Credit Card</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="field">
-        <button class="button is-primary">Proceed to Payment</button>
-      </div>
+        <div class="field">
+          <button class="button is-primary" type="submit">Proceed to Payment</button>
+        </div>
+      </form>
     </div>
   </div>
 </section>

@@ -1,5 +1,6 @@
 <% layout('layouts/boilerplate')%>
 
+
 <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
   <ul>
     <li><a href="/shop">Shop</a></li>
@@ -19,7 +20,7 @@
       </div>
       <div class="card-content">
         <figure class="image is-48x48">
-          <img src="<%= shop.uploadedUser.profilePicture.length ? shop.uploadedUser.profilePicture[0].url : defaultUserImg %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
+          <img src="<%= shop.uploadedUser.profilePicture.length ? shop.uploadedUser.profilePicture[0].url : defaultUserImg %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
         </figure>
         <h1 class="title"><%= shop.itemName %></h1>
         <p class="subtitle">Price: $<%= shop.price %></p>
@@ -56,8 +57,8 @@
           <% shop.reviews.forEach(({ uploadedUser, rating, body }) => { %>
           <li>
             <div class="media">
-              <figure class="profilePicture">
-                <img src="<%= uploadedUser.profilePicture.length ? uploadedUser.profilePicture[0].url : defaultUserImg %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture">
+              <figure class="image is-48x48">
+                <img src="<%= uploadedUser.profilePicture.length ? uploadedUser.profilePicture[0].url : defaultUserImg %>" alt="<%= shop.uploadedUser.username %>'s profile picture" class="profilePicture" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
               </figure>
               <div class="media-content">
                 <p class="title is-5"><%= uploadedUser.username %></p>
@@ -99,16 +100,8 @@
   </div>
 </div>
 
-<%- include('../partials/cart.ejs') %>
 
 <style>
-  .profilePicture {
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-  }
-
   .star-rating {
     display: inline-block;
     font-size: 2rem;
@@ -138,15 +131,21 @@
       button.addEventListener('click', () => {
         const itemId = button.dataset.itemId;
         fetch('/shop/cart/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            itemId
-          }),
-        }).then(response => response.json()).then(console.log).catch(console.error);
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              itemId
+            }),
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data.message);
+            location.reload();
+          })
+          .catch(err => console.error('Error:', err));
       });
     })
+
   });
 </script>

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport')
 const User = require('../models/user')
-const Chat = require('../models/chat');
 const { requireLogin } = require('../middleware');
 const { storeReturnTo } = require('../middleware');
 const multer = require('multer');
@@ -39,10 +38,11 @@ router.post('/signup', upload.single('profilePicture'), async (req, res, next) =
         const { email, username, password } = req.body;
         const user = new User({ email, username });
         if (req.file) {
-            user.profilePicture = [{
+            const profilePicture = {
                 url: req.file.path,
-                filename: req.file.filename
-            }];
+                filename: req.file.filename,
+            };
+            user.profilePicture = [profilePicture];
         } else {
             user.profilePicture = [
                 {
@@ -115,20 +115,19 @@ router.post('/profile', requireLogin, upload.single('profilePicture'), async (re
 
 router.get('/users/:id', async (req, res) => {
     try {
-        const userProfile = await User.findById(req.params.id);
+        const userProfile = await User.findById(req.params.id)
+            .populate('username')
+            .where('participants')
+            .in([req.user._id, req.params.id]);
+
         if (!userProfile) {
             req.flash('error', 'User not found.');
             return res.redirect('/feed');
         }
 
         const currentUser = req.user;
-        const chat = await Chat.findOne({
-            participants: { $all: [currentUser._id, userProfile._id] }
-        }).populate('messages.sender', 'username');
+        res.render('users/show', { user: userProfile, currentUser });
 
-        const chatMessages = chat ? chat.messages : [];
-
-        res.render('users/show', { user: userProfile, currentUser, chatMessages });
     } catch (err) {
         console.error(err);
         req.flash('error', 'Something went wrong.');

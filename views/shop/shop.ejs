@@ -29,7 +29,7 @@
               <div class="media">
                 <div class="media-left">
                   <figure class="image is-48x48">
-                    <img src="<%= shop.uploadedUser?.profilePicture?.[0]?.url || defaultUserImg %>" alt="<%= shop.uploadedUser?.username || 'Default' %>'s profile picture">
+                    <img class="is-rounded" src="<%= shop.uploadedUser?.profilePicture?.[0]?.url || defaultUserImg %>" alt="<%= shop.uploadedUser?.username || 'Default' %>'s profile picture" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
                   </figure>
                 </div>
                 <div class="media-content">
@@ -120,7 +120,10 @@
             }),
           })
           .then(res => res.json())
-          .then(data => console.log(data.message))
+          .then(data => {
+            console.log(data.message);
+            location.reload();
+          })
           .catch(err => console.error('Error:', err));
       });
     });

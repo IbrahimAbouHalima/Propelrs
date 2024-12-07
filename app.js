@@ -7,7 +7,6 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const session = require('express-session');
 const flash = require('connect-flash');
-const multer = require('multer');
 
 const userRoutes = require('./routes/users');
 const shopRoutes = require('./routes/shop.js');
@@ -19,7 +18,6 @@ const jobRoutes = require('./routes/jobs.js');
 const issueRoutes = require('./routes/issues.js');
 
 const User = require('./models/user');
-const Chat = require('./models/chat');
 
 const app = express();
 

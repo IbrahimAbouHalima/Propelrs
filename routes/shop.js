@@ -10,7 +10,6 @@ const upload = multer({ storage })
 router.get('/', async (req, res) => {
     try {
         const category = req.query.category || 'all';
-
         const shops = await Shop.find({ category: category === 'all' ? { $exists: true } : category })
             .populate('uploadedUser reviews');
         shops.forEach(shop => {
@@ -107,26 +106,10 @@ router.post('/cart/remove', (req, res) => {
     res.status(404).json({ message: 'Item not found in cart' });
 });
 
-router.get('/:id', async (req, res) => {
-    try {
-        const shop = await Shop.findById(req.params.id).populate('uploadedUser').populate({
-            path: 'reviews',
-            populate: {
-                path: 'uploadedUser',
-                model: 'User'
-            }
-        });
 
-        if (!shop) {
-            req.flash('error', 'Shop item not found.');
-            return res.redirect('/shop');
-        }
-        res.render('./shop/shopShow.ejs', { shop, cart: req.session.cart || [] });
-    } catch (err) {
-        console.error(err);
-        req.flash('error', 'Could not retrieve shop item.');
-        res.redirect('/shop');
-    }
+
+router.get('/checkout', (req, res) => {
+    res.render('shop/checkout', { cart: req.session.cart || [] });
 });
 
 router.post('/checkout', (req, res) => {
@@ -148,6 +131,28 @@ router.post('/checkout', (req, res) => {
             console.error(err);
             res.status(500).json({ message: 'Error processing order' });
         });
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const shop = await Shop.findById(req.params.id).populate('uploadedUser').populate({
+            path: 'reviews',
+            populate: {
+                path: 'uploadedUser',
+                model: 'User'
+            }
+        });
+
+        if (!shop) {
+            req.flash('error', 'Shop item not found.');
+            return res.redirect('/shop');
+        }
+        res.render('./shop/shopShow.ejs', { shop, cart: req.session.cart || [] });
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Could not retrieve shop item.');
+        res.redirect('/shop');
+    }
 });
 
 module.exports = router

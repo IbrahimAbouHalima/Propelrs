@@ -39,7 +39,7 @@
         <%= feed.description %>
         <br />
         <% for (let tag of feed.tags) { %>
-        <a href="#">#<%= tag %></a>
+        <a href="#"><%= tag %></a>
         <% } %>
         <br />
         <time datetime="<%= feed.createdAt.toISOString() %>"><%= feed.createdAt.toLocaleString() %></time>

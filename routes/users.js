@@ -115,16 +115,11 @@ router.post('/profile', requireLogin, upload.single('profilePicture'), async (re
 
 router.get('/users/:id', async (req, res) => {
     try {
-        const userProfile = await User.findById(req.params.id)
-            .populate('username')
-            .where('participants')
-            .in([req.user._id, req.params.id]);
-
+        const userProfile = await User.findById(req.params.id);
         if (!userProfile) {
             req.flash('error', 'User not found.');
             return res.redirect('/feed');
         }
-
         const currentUser = req.user;
         res.render('users/show', { user: userProfile, currentUser });
 
@@ -134,5 +129,6 @@ router.get('/users/:id', async (req, res) => {
         res.redirect('/feed');
     }
 });
+
 
 module.exports = router

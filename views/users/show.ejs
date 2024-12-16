@@ -12,22 +12,6 @@
     </div>
   </div>
 
-  <div class="chat-box mt-5">
-    <div id="messages">
-      <% if (chatMessages && chatMessages.length > 0) { %>
-      <% chatMessages.forEach(message => { %>
-      <div class="message">
-        <strong><%= message.sender.username %>:</strong>
-        <p><%= message.body %></p>
-      </div>
-      <% }) %>
-      <% } else { %>
-      <p>No chat history available.</p>
-      <% } %>
-    </div>
-    <textarea id="chat-input" class="textarea" placeholder="Type a message"></textarea>
-    <button id="send-message" class="button is-primary mt-2">Send</button>
-  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
